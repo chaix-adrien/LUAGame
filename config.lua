@@ -10,4 +10,4 @@ fire_time = 300
 item_spawn = 600
 game_victory = 0
 auto_reload = 1
-fullscreen = false
+fullscreen = true
