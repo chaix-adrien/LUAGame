@@ -34,6 +34,8 @@ function reset_player(player)
 	player["cooldown"] = 0
 	player["no_hit"] = 128
 	player["cut_state"] = 0
+	player["scale_x"] = (screen_w / walk[1]:getWidth() / x_fields)
+	player["scale_y"] = (screen_h / walk[1]:getHeight() / y_fields)
 end
 
 function spawn_players(players, map, x_lim, y_lim)

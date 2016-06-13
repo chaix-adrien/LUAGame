@@ -51,8 +51,10 @@ function  restart()
 	electric_blocks = {}
 	joysticks = love.joystick.getJoysticks()
 	if (table.getn(joysticks) < 1) then os.exit() end
-	x_fields = math.floor(16 * table.getn(joysticks) / 2)
-	y_fields = math.floor(9 * table.getn(joysticks) / 2)
+	x_fields = 16
+	y_fields = 9
+	tile_sizex = screen_w / x_fields
+	tile_sizey = screen_h / y_fields
 	if (blocks) then
 		for i, block in pairs(blocks) do
 			block["scale_x"], block["scale_y"] = get_sprite_scale(block["sprite"])
@@ -60,8 +62,6 @@ function  restart()
 	end
 	load_player_joystick()
 	map = gen_map(x_fields, y_fields, 10)
-	tile_sizex = screen_w / x_fields
-	tile_sizey = screen_h / y_fields
 	spawn_players(players, map, x_fields, y_fields)
 	game_victory = 0
 end
@@ -120,7 +120,7 @@ end
 function load_sounds()
 	--                    WALK  - FIRE
 	music = load_sound("music/music" .. tostring(math.random(4)) .. ".mp3", 0.7)
-	music:play()
+	music:setLooping(true)
     laser = load_sound("soundeffect/laser.wav", 0.4, "stream")
 	shield_sound = load_sound("soundeffect/shield_impact.wav", 0.4, "stream")
 	shield_break_sound = load_sound("soundeffect/break_shield.wav", 1, "stream")

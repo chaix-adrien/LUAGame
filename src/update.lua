@@ -127,6 +127,9 @@ function update_players()
 	if (love.keyboard.isDown("space")) then
 		restart()
 	end
+	if (love.keyboard.isDown("escape")) then
+		os.exit()
+	end
 end
 
 function update_music()

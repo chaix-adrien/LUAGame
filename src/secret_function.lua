@@ -32,14 +32,13 @@ function draw_fire()
 		for i, value in pairs(players) do
 			draw_shield(value)
 			if (value["ammo"] > 0 and value["cooldown"] == 0 and value["shield"] == 0) then
-				tmp_posx = (value["pos_x"] - 1) * tile_sizex
-				tmp_posy = (value["pos_y"] - 1) * tile_sizey
+				tmp_posx, tmp_posy = map_to_pixel(value["pos_x"], value["pos_y"])
 				vec_x, vec_y = get_view_vector(value)
 				set_laser_color(value)
+				local hit = 0
 				repeat
-					local hit = 0
+					hit = 0
 					for i, player in pairs(players) do
-					-- if shield
 						if ((value["name"] ~= player["name"]) and math.pow(tmp_posx - (player["pos_x"] - 1) * tile_sizex, 2)
 							+ math.pow(tmp_posy - (player["pos_y"] - 1) * tile_sizey, 2) < math.pow(tile_sizey / 2, 2)) then
 							love.graphics.rectangle("fill", tmp_posx, tmp_posy, 7, 7)
@@ -47,14 +46,19 @@ function draw_fire()
 							break
 						end
 					end
-					if (hit == 1 or blocks[map[math.floor(tmp_posy / tile_sizey) + 1][math.floor(tmp_posx / tile_sizex) + 1]]["crossable"] == 0) then
+					if (hit == 1 or
+					blocks[map[math.floor(tmp_posy /
+					tile_sizey) + 1]
+					[math.floor(tmp_posx /
+					tile_sizex) + 1]]
+					["crossable"] == 0) then
 						break
 					end
 					love.graphics.rectangle("fill", tmp_posx, tmp_posy, 7, 7)	
 					tmp_posx = tmp_posx + vec_x
 					tmp_posy = tmp_posy + vec_y
-				until (tmp_posx < 0 or tmp_posx > screen_w or
-				tmp_posy < 0 or tmp_posy > screen_h)
+				until (tmp_posx < 0 or tmp_posx >= screen_w or
+				tmp_posy < 0 or tmp_posy >= screen_h)
 				love.graphics.setColor(255, 255, 255, 255)
 			end
 		end

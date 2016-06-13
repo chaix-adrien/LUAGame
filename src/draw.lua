@@ -100,8 +100,7 @@ function draw_players(players, walk)
  			new_r = player["r"]
  		end
  		new_r = new_r % (math.pi * 2)
-		tmp_x = (player["pos_x"] - 1) * (screen_w / x_fields)
-		tmp_y = (player["pos_y"] - 1) * (screen_h / y_fields)
+		tmp_x, tmp_y = map_to_pixel(player["pos_x"], player["pos_y"])
 		new_x = (math.cos(-new_r) * (screen_w / x_fields) + math.sin(-new_r) * (screen_h / y_fields)) / 2
 		new_y = (math.cos(-new_r) * (screen_h / y_fields) - math.sin(-new_r) * (screen_w / x_fields)) / 2
 		tmp_x = tmp_x  - new_x
