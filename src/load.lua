@@ -91,8 +91,8 @@ function  load_blocks()
         load_block("block/bolt_ball/bolt_ball_0001.png", 1, 1, shooted_on_nothing, electric_damage, cut_on_nothing),
         load_block("block/electric_box.png", 0, 0, electric_explode, reset_status, electric_explode),
 		load_block("block/coffre.png", 0, 0, shooted_on_nothing, reset_status, open_chest),
-		load_block("block/invincible.png", 1, 0, turn_block_to_floor, powerup_invincible, turn_block_to_floor),
-		load_block("block/ammo.png", 1, 0, turn_block_to_floor, powerup_ammo, turn_block_to_floor)}
+		load_block("block/invincible.png", 1, 0, shooted_on_nothing, powerup_invincible, cut_on_nothing),
+		load_block("block/ammo.png", 1, 0, shooted_on_nothing, powerup_ammo, cut_on_nothing)}
 end
 
 function load_animation()
