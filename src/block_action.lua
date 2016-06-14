@@ -21,10 +21,6 @@ function break_box(x, y, player)
 	turn_block_to_fire(x, y, player)
 end
 
-function cut_on_nothing(x, y, player)
-	return nil
-end
-
 function explode(x, y, player)
 	tnt_sound:play()
 	for i = y - 1, y + 1, 1 do
@@ -135,6 +131,35 @@ function powerup_shield(x, y, player)
 		player["shield_life"] = 3
 	end
 end
+
+function powerup_invincible(x, y, player)
+	player["no_hit"] = 120
+	turn_block_to_floor(x, y , player)
+end
+
+function powerup_ammo(x, y, player)
+	player["ammo"] = 10
+	turn_block_to_floor(x, y , player)
+end
+
+--
+--
+-- CUT ON --
+--
+--
+
+function cut_on_nothing(x, y, player)
+	return nil
+end
+
+function open_chest(x, y, player)
+	if (math.random(2) == 2) then
+		map[y][x] = 16
+	else
+	map[y][x] = 17
+	end
+end
+
 
 --
 --
