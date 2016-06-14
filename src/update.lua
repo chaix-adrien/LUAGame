@@ -1,7 +1,4 @@
 function move_player(value, i)
-	if (math.abs(joysticks[i]:getGamepadAxis("righty")) > 0.4 or math.abs(joysticks[i]:getGamepadAxis("rightx")) > 0.4) then
-		value["r"] = math.atan2(joysticks[i]:getGamepadAxis("righty"), joysticks[i]:getGamepadAxis("rightx")) + math.pi / 2
-	end
 	local done = 0
 	local x = joysticks[i]:getGamepadAxis("leftx")
 	local y = joysticks[i]:getGamepadAxis("lefty")
@@ -24,7 +21,7 @@ function move_player(value, i)
 			if value["frame"] > 4.0 then value["frame"] = 1 end
 		end
 	end
-	blocks[map[math.floor(value["pos_y"])]  [math.floor(value["pos_x"])]  ] ["walked_on"] (math.floor(value["pos_x"]), math.floor(value["pos_y"]), value)
+	blocks[map[math.floor(value["pos_y"])][math.floor(value["pos_x"])]]["walked_on"] (math.floor(value["pos_x"]), math.floor(value["pos_y"]), value)
 end
 
 function update_element(element_blocks)
@@ -79,6 +76,35 @@ function shoot(player)
 	player["shoot"] = 1
 end
 
+function update_weapon_player(value, i)
+	if (math.abs(joysticks[i]:getGamepadAxis("righty")) > 0.4 or math.abs(joysticks[i]:getGamepadAxis("rightx")) > 0.4) then
+		value["r"] = math.atan2(joysticks[i]:getGamepadAxis("righty"), joysticks[i]:getGamepadAxis("rightx")) + math.pi / 2
+	end
+	if (value["ammo"] > 0  and value["shield"] == 0 and joysticks[i]:getGamepadAxis("triggerright") > 0.8 and value["shoot"] == 0 and value["cooldown"] == 0) then
+           shoot(value)
+	elseif (joysticks[i]:getGamepadAxis("triggerright") < 0.8 and value["shoot"] == 1) then
+		value["shoot"] = 0
+	end
+	if (joysticks[i]:getGamepadAxis("triggerleft") > 0.8) then
+		value["shield"] = 1
+		value["speed"] = 0.065
+	else
+		value["shield"] = 0
+		if (value["speed"] == 0.65) then
+			value["speed"] = 0.1
+		end
+	end
+	if (joysticks[i]:isGamepadDown("x") and value["shoot"] == 0) then
+		reload(value, reload_sound)
+	end
+	if (joysticks[i]:isGamepadDown("b") and value["shoot"] == 0 and value["cut_state"] == 0 and value["shield"] == 0) then
+		cut_attack(value)
+	end
+	if (auto_reload == 1 and value["ammo"] == 0) then
+		reload(value, reload_sound)
+	end
+end
+
 function update_player(value, i)
 	if (value["cut_state"] > 0) then
 		value["cut_state"] = value["cut_state"] - 1
@@ -89,9 +115,9 @@ function update_player(value, i)
 	if (value["no_hit"] > 0) then
 		value["no_hit"] = value["no_hit"] - 1
 	end
-	if (auto_reload == 1 and value["ammo"] == 0) then
-		reload(value, reload_sound)
-	end
+	
+	move_player(value, i)
+	update_weapon_player(value, i)
 	if (i and value["life"] <= 0) then
         value.alive = 0    
 	end
@@ -99,36 +125,9 @@ end
 
 function update_players()
 	for i, value in pairs(players) do
-	if (value.alive == 1) then
-		move_player(value, i)
-		if (value["ammo"] > 0  and value["shield"] == 0 and joysticks[i]:getGamepadAxis("triggerright") > 0.5 and value["shoot"] == 0 and value["cooldown"] == 0) then
-            shoot(value)
-		elseif (joysticks[i]:getGamepadAxis("triggerright") < 0.8 and value["shoot"] == 1) then
-			value["shoot"] = 0
+		if (value.alive == 1) then
+			update_player(value, i)
 		end
-		if (joysticks[i]:getGamepadAxis("triggerleft") > 0.8) then
-			value["shield"] = 1
-			value["speed"] = 0.065
-		else
-			value["shield"] = 0
-			if (value["speed"] == 0.65) then
-				value["speed"] = 0.1
-			end
-		end
-		if (joysticks[i]:isGamepadDown("x") and value["shoot"] == 0) then
-			reload(value, reload_sound)
-		end
-		if (joysticks[i]:isGamepadDown("b") and value["shoot"] == 0 and value["cut_state"] == 0 and value["shield"] == 0) then
-			cut_attack(value)
-		end
-		update_player(value, i)
-		end
-	end
-	if (love.keyboard.isDown("space")) then
-		restart()
-	end
-	if (love.keyboard.isDown("escape")) then
-		os.exit()
 	end
 end
 
@@ -145,5 +144,10 @@ function love.update(dt)
 	update_element(electric_blocks)
 	update_item_spawn()
     update_music()
-	last_time = act_time
+	if (love.keyboard.isDown("space")) then
+		restart()
+	end
+	if (love.keyboard.isDown("escape")) then
+		os.exit()
+	end
 end

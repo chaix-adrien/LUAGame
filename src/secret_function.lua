@@ -1,3 +1,11 @@
+function rotate_pos(x, y, r, sprite)
+	local new_x = (math.cos(-r) * (screen_w / x_fields) + math.sin(-r) * (screen_h / y_fields)) / 2
+	local new_y = (math.cos(-r) * (screen_h / y_fields) - math.sin(-r) * (screen_w / x_fields)) / 2
+	local tmp_x = x  - new_x
+	local tmp_y = y - new_y
+	return tmp_x, tmp_y
+end
+
 function draw_shield(player)
 	if (player["shield"] and player["shield"] == 1 and player["shield_life"] > 0) then
 		if (player["shield_life"] > 2) then love.graphics.setColor(0, 0, 255, 255)
@@ -27,41 +35,38 @@ function set_laser_color(value)
 	end
 end
 
-function draw_fire()
-	if (impact) then
-		for i, value in pairs(players) do
-			draw_shield(value)
-			if (value["ammo"] > 0 and value["cooldown"] == 0 and value["shield"] == 0) then
-				tmp_posx, tmp_posy = map_to_pixel(value["pos_x"], value["pos_y"])
-				vec_x, vec_y = get_view_vector(value)
-				set_laser_color(value)
-				local hit = 0
-				repeat
-					hit = 0
-					for i, player in pairs(players) do
-						if ((value["name"] ~= player["name"]) and math.pow(tmp_posx - (player["pos_x"] - 1) * tile_sizex, 2)
-							+ math.pow(tmp_posy - (player["pos_y"] - 1) * tile_sizey, 2) < math.pow(tile_sizey / 2, 2)) then
-							love.graphics.rectangle("fill", tmp_posx, tmp_posy, 7, 7)
-							hit = 1
-							break
-						end
-					end
-					if (hit == 1 or
-					blocks[map[math.floor(tmp_posy /
-					tile_sizey) + 1]
-					[math.floor(tmp_posx /
-					tile_sizex) + 1]]
-					["crossable"] == 0) then
-						break
-					end
-					love.graphics.rectangle("fill", tmp_posx, tmp_posy, 7, 7)	
-					tmp_posx = tmp_posx + vec_x
-					tmp_posy = tmp_posy + vec_y
-				until (tmp_posx < 0 or tmp_posx >= screen_w or
-				tmp_posy < 0 or tmp_posy >= screen_h)
-				love.graphics.setColor(255, 255, 255, 255)
+function draw_fire(player)
+	if (player["shield"] and player["shield_life"]) then
+		draw_shield(player)
+	end
+	if (player["ammo"] > 0 and player["cooldown"] == 0 and not (player["shield"] and player["shield"] ~= 0)) then
+		tmp_posx, tmp_posy = map_to_pixel(player["pos_x"], player["pos_y"])
+		vec_x, vec_y = get_view_vector(player)
+		set_laser_color(player)
+		local hit = 0
+		repeat
+			hit = 0
+			for i, target in pairs(players) do
+				if ((player["name"] ~= target["name"]) and math.pow(tmp_posx - (target["pos_x"] - 1) * tile_sizex, 2)
+					+ math.pow(tmp_posy - (target["pos_y"] - 1) * tile_sizey, 2) < math.pow(tile_sizey / 2, 2)) then
+					hit = 1
+					break
+				end
 			end
-		end
+			if (hit == 1 or
+			blocks[map[math.floor(tmp_posy /
+			tile_sizey) + 1]
+			[math.floor(tmp_posx /
+			tile_sizex) + 1]]
+			["crossable"] == 0) then
+				break
+			end
+			love.graphics.rectangle("fill", tmp_posx, tmp_posy, 7, 7)	
+			tmp_posx = tmp_posx + vec_x
+			tmp_posy = tmp_posy + vec_y
+		until (tmp_posx < 0 or tmp_posx >= screen_w or
+		tmp_posy < 0 or tmp_posy >= screen_h)
+		love.graphics.setColor(255, 255, 255, 255)
 	end
 end
 
@@ -71,15 +76,22 @@ end
 --
 
 function cut_attack(player)
+	j2, i2 = map_to_pixel(player["pos_x"], player["pos_y"])
 	for i, target in pairs(players) do
 		j, i = map_to_pixel(target["pos_x"], target["pos_y"])
-		j2, i2 = map_to_pixel(player["pos_x"], player["pos_y"])
 		if (target["name"] ~= player["name"] and
 			math.sqrt(math.pow(j - j2, 2) + math.pow(i - i2, 2)) < tile_sizey) then
 			target["life"] = target["life"] - 10
 			target["no_hit"] = 120
 			cut_sound:play()
 		end
+	end
+	blocks[map[math.floor(player["pos_y"])][math.floor(player["pos_x"])]]["cut_on"](j2, i2, player)
+	local tmp_x = math.floor(player["pos_x"] + 0.5 * math.cos(player["r"] - math.pi / 2))
+	local tmp_y = math.floor(player["pos_y"] + 0.5 * math.sin(player["r"] - math.pi / 2))
+	if (tmp_x > 0 and tmp_y > 0 and tmp_x <= x_fields and tmp_y <= y_fields 
+		and (tmp_x ~= math.floor(player["pos_x"]) or tmp_y ~= math.floor(player["pos_y"]))) then
+		blocks[map[tmp_y][tmp_x]]["cut_on"](tmp_x, tmp_y, player)
 	end
 	player["cut_state"] = 60
 end
@@ -104,16 +116,18 @@ function get_fire(value)
 		for i, player in pairs(players) do
 			if ((value["name"] ~= player["name"]) and math.pow(tmp_posx - (player["pos_x"] - 1) * tile_sizex, 2)
 				+ math.pow(tmp_posy - (player["pos_y"] - 1) * tile_sizey, 2) < math.pow(tile_sizey / 2, 2)) then
-				if (check_shield(player, vec_x, vec_y) == 1) then
+				if (player["shield"] and check_shield(player, vec_x, vec_y) == 1) then
 					player["shield_life"] = player["shield_life"] - 1
 					if (player["shield_life"] > 0) then
 						shield_sound:play()
 					else
 						shield_break_sound:play()
 					end
-					table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact})
+					if (sprite_impact) then
+						table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact})
+					end
 					return player, 1					
-				elseif (player["no_hit"] and player["no_hit"] == 0) then
+				elseif (player["no_hit"] == 0 and sprite_skull) then
 					table.insert(impact, {pos_x = (player["pos_x"] - 1) * tile_sizex, pos_y = (player["pos_y"] - 1) * tile_sizey, frame = 15, sprite = sprite_skull, color = player.color})
 				end
 				return player, 0
@@ -121,7 +135,9 @@ function get_fire(value)
 		end
 		if (blocks[map[math.floor(tmp_posy / tile_sizey) + 1][math.floor(tmp_posx / tile_sizex) + 1]]["crossable"] == 0) then
 			blocks[map[math.floor(tmp_posy / tile_sizey) + 1][math.floor(tmp_posx / tile_sizex) + 1]]["shooted_on"](math.floor(tmp_posx / tile_sizex) + 1,  math.floor(tmp_posy / tile_sizey) + 1, player)
-			table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = value.color})
+			if (sprite_impact) then
+				table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = value.color})
+			end
 			break
 		end
 		tmp_posx = tmp_posx + vec_x

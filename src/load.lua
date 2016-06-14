@@ -20,6 +20,8 @@ function gen_map(x, y, rate)
 				table.insert(to_add, 10)
 			elseif (love.math.random(rate * 4) == ((rate))) then
 				table.insert(to_add, 14)
+			elseif (love.math.random(rate * 20) == ((rate))) then
+				table.insert(to_add, 15)
 			else
 				table.insert(to_add, 1)
 			end
@@ -66,28 +68,28 @@ function  restart()
 	game_victory = 0
 end
 
-function load_block(name, walkability, cross, shoot, walk)
+function load_block(name, walkability, cross, shoot, walk, cut)
 	local img = love.graphics.newImage(name)
 	sx, sy = get_sprite_scale(img)
-	local block = {sprite = img, scale_x = sx, scale_y = sy, walkable = walkability, shooted_on = shoot, walked_on = walk, crossable = cross}
+	local block = {sprite = img, scale_x = sx, scale_y = sy, walkable = walkability, shooted_on = shoot, walked_on = walk, cut_on = cut, crossable = cross}
 	return (block)
 end
 
 function  load_blocks()
-    blocks = {load_block("block/floor.png", 1, 1, shooted_on_nothing, reset_status),
-	    load_block("block/broken_brick.png", 0, 0, shoot_on_brick, reset_status),
-        load_block("block/brick.png", 0, 0, shoot_on_brick, reset_status),
-        load_block("block/wall.png", 0, 0, shooted_on_nothing, reset_status),
-        load_block("block/hole.png", 0, 1, shooted_on_nothing, reset_status),
-        load_block("block/mud.png", 1, 1, shooted_on_nothing, mud),
-        load_block("block/fire_ball/fire1.png", 1, 1, shooted_on_nothing, fire_damage),
-        load_block("block/inflamable.png", 0, 0, break_box, reset_status),
-        load_block("block/tnt.png", 0, 0, explode, reset_status),
-        load_block("block/waterbomb.png", 1, 0, waterbomb, waterbomb),
-        load_block("block/life.png", 1, 0, turn_block_to_floor, powerup_life),
-        load_block("block/shield.png", 1, 0, turn_block_to_floor, powerup_shield),
-        load_block("block/bolt_ball/bolt_ball_0001.png", 1, 1, shooted_on_nothing, electric_damage),
-        load_block("block/electric_box.png", 0, 0, electric_explode, reset_status)}
+    blocks = {load_block("block/floor.png", 1, 1, shooted_on_nothing, reset_status, cut_on_nothing),
+	    load_block("block/broken_brick.png", 0, 0, shoot_on_brick, reset_status, shoot_on_brick),
+        load_block("block/brick.png", 0, 0, shoot_on_brick, reset_status, shoot_on_brick),
+        load_block("block/wall.png", 0, 0, shooted_on_nothing, reset_status, cut_on_nothing),
+        load_block("block/hole.png", 0, 1, shooted_on_nothing, reset_status, cut_on_nothing),
+        load_block("block/mud.png", 1, 1, shooted_on_nothing, mud, cut_on_nothing),
+        load_block("block/fire_ball/fire1.png", 1, 1, shooted_on_nothing, fire_damage, cut_on_nothing),
+        load_block("block/inflamable.png", 0, 0, break_box, reset_status, break_box),
+        load_block("block/tnt.png", 0, 0, explode, reset_status, explode),
+        load_block("block/waterbomb.png", 1, 0, waterbomb, waterbomb, waterbomb),
+        load_block("block/life.png", 1, 0, turn_block_to_floor, powerup_life, turn_block_to_floor),
+        load_block("block/shield.png", 1, 0, turn_block_to_floor, powerup_shield, turn_block_to_floor),
+        load_block("block/bolt_ball/bolt_ball_0001.png", 1, 1, shooted_on_nothing, electric_damage, cut_on_nothing),
+        load_block("block/electric_box.png", 0, 0, electric_explode, reset_status, electric_explode)}
 end
 
 function load_animation()

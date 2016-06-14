@@ -94,22 +94,20 @@ function draw_players(players, walk)
 	local new_r = 0
 	for i, player in pairs(players) do
 		if (player["alive"] == 1) then
-		if (player["cut_state"] > 50) then
- 		new_r = player["r"] + math.pi * 2 * ((player["cut_state"] - 50) / 10)
- 		else
- 			new_r = player["r"]
- 		end
- 		new_r = new_r % (math.pi * 2)
-		tmp_x, tmp_y = map_to_pixel(player["pos_x"], player["pos_y"])
-		new_x = (math.cos(-new_r) * (screen_w / x_fields) + math.sin(-new_r) * (screen_h / y_fields)) / 2
-		new_y = (math.cos(-new_r) * (screen_h / y_fields) - math.sin(-new_r) * (screen_w / x_fields)) / 2
-		tmp_x = tmp_x  - new_x
-		tmp_y = tmp_y - new_y
-		love.graphics.setColor(player["color"][1], player["color"][2], player["color"][3], 255)
-		if (math.floor(player["no_hit"] / 10) % 3 ~= 1) then
-			love.graphics.draw(walk[math.floor(player["frame"])], tmp_x, tmp_y, new_r, player["scale_x"], player["scale_y"])
-		end
-		draw_player_life(player)
+			if (player["cut_state"] > 50) then
+	 			new_r = player["r"] + math.pi * 2 * ((player["cut_state"] - 50) / 10)
+ 			else
+ 				draw_fire(player)
+ 	 			new_r = player["r"]
+ 			end
+ 			new_r = new_r % (math.pi * 2)
+			tmp_x, tmp_y = map_to_pixel(player["pos_x"], player["pos_y"])
+			tmp_x, tmp_y = rotate_pos(tmp_x, tmp_y, new_r, walk)		
+				love.graphics.setColor(player["color"][1], player["color"][2], player["color"][3], 255)
+			if (math.floor(player["no_hit"] / 10) % 3 ~= 1) then
+				love.graphics.draw(walk[math.floor(player["frame"])], tmp_x, tmp_y, new_r, player["scale_x"], player["scale_y"])
+			end
+			draw_player_life(player)
 		end
 	end
 end
@@ -117,7 +115,6 @@ end
 function love.draw()
 	draw_map()
 	draw_impact(impact, sprite_impact)
-	draw_fire()
 	draw_players(players, walk)
 	draw_victory()
 end

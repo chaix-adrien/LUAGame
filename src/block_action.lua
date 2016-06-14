@@ -21,6 +21,10 @@ function break_box(x, y, player)
 	turn_block_to_fire(x, y, player)
 end
 
+function cut_on_nothing(x, y, player)
+	return nil
+end
+
 function explode(x, y, player)
 	tnt_sound:play()
 	for i = y - 1, y + 1, 1 do
