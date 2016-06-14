@@ -10,4 +10,7 @@ fire_time = 300
 item_spawn = 600
 game_victory = 0
 auto_reload = 1
+music_volume = 1
+sound_volume = 1
 fullscreen = false
+launch_on_menu = 1

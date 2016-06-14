@@ -47,25 +47,30 @@ function load_player_joystick()
 	end
 end
 
-function  restart()
-	item_spawn = 600
-	fire_blocks = {}
-	electric_blocks = {}
-	joysticks = love.joystick.getJoysticks()
-	if (table.getn(joysticks) < 1) then os.exit() end
-	x_fields = 16
-	y_fields = 9
-	tile_sizex = screen_w / x_fields
-	tile_sizey = screen_h / y_fields
+function reset_blocks()
 	if (blocks) then
 		for i, block in pairs(blocks) do
 			block["scale_x"], block["scale_y"] = get_sprite_scale(block["sprite"])
 		end
 	end
+end
+
+function  restart()
+	item_spawn = 600
+	fire_blocks = {}
+	electric_blocks = {}
+	joysticks = love.joystick.getJoysticks()
+	if (table.getn(joysticks) < 1) then return 1 end
+	x_fields = 16
+	y_fields = 9
+	tile_sizex = screen_w / x_fields
+	tile_sizey = screen_h / y_fields
+	reset_blocks()	
 	load_player_joystick()
 	map = gen_map(x_fields, y_fields, 10)
 	spawn_players(players, map, x_fields, y_fields)
 	game_victory = 0
+	return 0
 end
 
 function load_block(name, walkability, cross, shoot, walk, cut)
@@ -122,10 +127,31 @@ function load_sound(name, volume, mode)
     return sound
 end
 
+function set_volumes()
+	music_volume = option_menu.slides[1].value
+	sound_volume = option_menu.slides[2].value
+	music:setVolume(0.7 * music_volume)
+	laser:setVolume(0.4 * sound_volume)
+	shield_sound:setVolume(0.4 * sound_volume)
+	shield_break_sound:setVolume(1 * sound_volume)
+	powerup_life_sound:setVolume(1 * sound_volume)
+	powerup_shield_sound:setVolume(1 * sound_volume)
+	laser2:setVolume(1 * sound_volume)
+	reload_sound:setVolume(1 * sound_volume)
+	tnt_sound:setVolume(1 * sound_volume)
+	waterbomb_sound:setVolume(0.5 * sound_volume)
+	win_sound:setVolume(1 * sound_volume)
+	box_sound:setVolume(1 * sound_volume)
+	cut_sound:setVolume(1 * sound_volume)
+	electric_explode_sound:setVolume(0.7 * sound_volume)
+	item_spawn_sound:setVolume(1 * sound_volume)
+end
+
 function load_sounds()
 	--                    WALK  - FIRE
 	music = load_sound("music/music" .. tostring(math.random(4)) .. ".mp3", 0.7)
 	music:setLooping(true)
+	music:play()
     laser = load_sound("soundeffect/laser.wav", 0.4, "stream")
 	shield_sound = load_sound("soundeffect/shield_impact.wav", 0.4, "stream")
 	shield_break_sound = load_sound("soundeffect/break_shield.wav", 1, "stream")
@@ -142,15 +168,28 @@ function load_sounds()
 	item_spawn_sound = load_sound("soundeffect/item_spawn.wav", 1, "stream")
 end
 
+function launch_quick_party()
+	if (restart() == 1) then
+		return
+	end
+	love.update = update_game
+	love.draw = draw_game
+end
+
 function love.load()
 	math.randomseed(os.time())
 	walk = {love.graphics.newImage("misc/walk_one.png"), love.graphics.newImage("misc/walk_two.png"),
 	love.graphics.newImage("misc/walk_three.png"), love.graphics.newImage("misc/walk_two.png")}
-	restart()
 	load_blocks()
     load_animation()
 	load_impact()
 	load_sounds()
+	load_gui()
 	love.window.setMode(screen_w, screen_h)
 	love.window.setFullscreen(fullscreen, "exclusive")
+	if (launch_on_menu == 1) then
+		launch_menu(main_menu)
+	else
+		launch_quick_party()
+	end
 end

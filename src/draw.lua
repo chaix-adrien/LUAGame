@@ -112,7 +112,7 @@ function draw_players(players, walk)
 	end
 end
 
-function love.draw()
+function draw_game()
 	draw_map()
 	draw_impact(impact, sprite_impact)
 	draw_players(players, walk)

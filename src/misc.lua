@@ -1,4 +1,7 @@
 function get_sprite_scale(sprite)
+	if (not tile_sizex or not tile_sizey) then
+		return 0, 0
+	end
 	local x = tile_sizex / sprite:getWidth()
 	local y = tile_sizey / sprite:getHeight()
 	return x, y
@@ -36,4 +39,15 @@ function game_ended()
 	else
 		return 0
 	end
+end
+
+function draw_size(img, posx, posy, sizex, sizey, r)
+	local scalex = sizex / img:getWidth()
+	local scaley = sizey / img:getHeight()
+	if r then
+		local rr = r
+	else
+		local rr = 0
+	end
+	love.graphics.draw(img, posx, posy, rr, scalex, scaley) 
 end

@@ -137,7 +137,7 @@ function update_music()
   	end
 end
 
-function love.update(dt)
+function update_game(dt)
     act_time = os.clock()
 	update_players()
 	update_element(fire_blocks)
@@ -148,6 +148,11 @@ function love.update(dt)
 		restart()
 	end
 	if (love.keyboard.isDown("escape")) then
-		os.exit()
+		if (launch_on_menu == 1) then
+			for i=0, 1000000000, 1 do tmp = i / 4 end
+			go_to_main_menu()
+		else
+			os.exit()
+		end
 	end
 end
