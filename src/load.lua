@@ -53,12 +53,16 @@ function reset_blocks()
 			block["scale_x"], block["scale_y"] = get_sprite_scale(block["sprite"])
 		end
 	end
+	powerup_life_block.scale_x, powerup_life_block.scale_y = get_sprite_scale(powerup_life_block.sprite)
+	powerup_ammo_block.scale_x, powerup_ammo_block.scale_y = get_sprite_scale(powerup_ammo_block.sprite)
+	powerup_invincible_block.scale_x, powerup_invincible_block.scale_y = get_sprite_scale(powerup_invincible_block.sprite)
+	powerup_shield_block.scale_x, powerup_shield_block.scale_y = get_sprite_scale(powerup_shield_block.sprite)
 end
 
 function  restart()
-	item_spawn = 600
 	fire_blocks = {}
 	electric_blocks = {}
+	powerups = {}
 	joysticks = love.joystick.getJoysticks()
 	if (table.getn(joysticks) < 1) then return 1 end
 	x_fields = 16
@@ -70,6 +74,8 @@ function  restart()
 	map = gen_map(x_fields, y_fields, 10)
 	spawn_players(players, map, x_fields, y_fields)
 	game_victory = 0
+	item_spawn = item_spawn_rate
+	set_volumes()
 	return 0
 end
 
@@ -94,10 +100,11 @@ function  load_blocks()
         bolt_ball = load_block("bolt_ball", "block/bolt_ball/bolt_ball_0001.png", 1, 1, shooted_on_nothing, electric_damage, cut_on_nothing),
         electric_box = load_block("electric_box", "block/electric_box.png", 0, 0, electric_explode, reset_status, electric_explode),
 		chest = load_block("chest", "block/coffre.png", 0, 0, shooted_on_nothing, reset_status, open_chest)}
-		powerup_life_sprite = love.graphics.newImage("block/life.png")
-		powerup_shield_sprite = love.graphics.newImage("block/shield.png")
-		powerup_invincible_sprite = love.graphics.newImage("block/invincible.png")
-		powerup_ammo_sprite = love.graphics.newImage("block/ammo.png")
+
+		powerup_life_block = load_block("PU_life", "block/life.png", 1, 1, turn_block_to_floor, powerup_life, turn_block_to_floor)
+		powerup_shield_block = load_block("PU_shield", "block/shield.png", 1, 1, turn_block_to_floor, powerup_shield, turn_block_to_floor)
+		powerup_ammo_block = load_block("PU_ammo", "block/ammo.png", 1, 1, turn_block_to_floor, powerup_ammo, turn_block_to_floor)
+		powerup_invincible_block = load_block("PU_invincible", "block/invincible.png", 1, 1, turn_block_to_floor, powerup_invincible, turn_block_to_floor)
 end
 
 function load_animation()

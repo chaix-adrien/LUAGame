@@ -55,6 +55,12 @@ function draw_block(block, pos_x, pos_y)
 	love.graphics.draw(block["sprite"], ((pos_x - 1) * tile_sizex), ((pos_y - 1) * tile_sizey), 0, block["scale_x"], block["scale_y"])
 end
 
+function draw_powerups()
+	for i, powerup in pairs(powerups) do
+		draw_block(powerup.block, powerup.x, powerup.y)
+	end
+end
+
 function draw_map()
 	for i = 1, x_fields, 1 do
 		for j = 1, y_fields, 1 do
@@ -65,6 +71,7 @@ function draw_map()
 	end
 	draw_flames()
 	draw_electricity()
+	draw_powerups()
 end
 
 nameplate_h = 10

@@ -134,12 +134,10 @@ end
 
 function powerup_invincible(x, y, player)
 	player["no_hit"] = 120
-	turn_block_to_floor(x, y , player)
 end
 
 function powerup_ammo(x, y, player)
 	player["ammo"] = 10
-	turn_block_to_floor(x, y , player)
 end
 
 --
@@ -152,12 +150,13 @@ function cut_on_nothing(x, y, player)
 	return nil
 end
 
-function open_chest(x, y, player)
+function open_chest(px, py, player)
 	if (math.random(2) == 2) then
-		map[y][x] = blocks.floor
+		table.insert(powerups, {x = px, y = py, block = powerup_invincible_block})
 	else
-	map[y][x] = blocks.floor
+		table.insert(powerups, {x = px, y = py, block = powerup_ammo_block})
 	end
+	turn_block_to_floor(px, py)
 end
 
 

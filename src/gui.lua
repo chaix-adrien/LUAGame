@@ -30,8 +30,8 @@ function load_gui()
 	table.insert(main_menu.buttons, create_button("misc/option.png", "", 538, 135, 350, 570, go_to_option, nil))
 
 	option_menu = {back = love.graphics.newImage("misc/option_menu.png"), buttons = {}, slides = {}}
-	table.insert(option_menu.slides, create_slide("music volume", 300, 30, 470, 470, 0, 1, 1, set_volumes, nil))
-	table.insert(option_menu.slides, create_slide("sound volume", 300, 30, 470, 530, 0, 1, 1, set_volumes, nil))
+	table.insert(option_menu.slides, create_slide("music volume", 300, 30, 470, 470, 0, 1, music_volume, set_volumes, nil))
+	table.insert(option_menu.slides, create_slide("sound volume", 300, 30, 470, 530, 0, 1, sound_volume, set_volumes, nil))
 	table.insert(option_menu.buttons, create_button("misc/retour.png", "", 538, 135, 350, 570, go_to_main_menu, nil))
 end
 

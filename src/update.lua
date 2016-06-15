@@ -39,13 +39,14 @@ end
 function spawn_item()
     local done = -100 -- a voir
     repeat
-		x = math.random(x_fields - 1) + 1
-		y = math.random(y_fields - 1) + 1
-	    if (map[y][x].type == "floor") then
+		px = math.random(x_fields - 1) + 1
+		py = math.random(y_fields - 1) + 1
+	    if (map[py][px].type == "floor") then
+			print(px, py)
     		if (math.random(2) == 1) then
-				map[y][x] = powerups.life
+				table.insert(powerups, {x = px, y = py, block = powerup_life_block})
 			else
-    			map[y][x] = powerupd.shield
+				table.insert(powerups, {x = px, y = py, block = powerup_shield_block})
 			end
 			item_spawn_sound:play()
 			done = 1
@@ -54,10 +55,12 @@ function spawn_item()
 	until (done > 0)
 end
 
+item_spawn = item_spawn_rate
+
 function update_item_spawn()
 	item_spawn = item_spawn - 1
 	if (item_spawn <= 0) then
-		item_spawn = 900
+		item_spawn = item_spawn_rate
         spawn_item()		
 	end
 end
@@ -105,6 +108,15 @@ function update_weapon_player(value, i)
 	end
 end
 
+function update_powerup_player(player)
+	for i, powerup in pairs(powerups) do
+		if (math.floor(player.pos_x) == powerup.x and math.floor(player.pos_y) == powerup.y) then
+			powerup.block.walked_on(powerup.x, powerup.y, player)
+			table.remove(powerups, i)
+		end
+	end
+end
+
 function update_player(value, i)
 	if (value["cut_state"] > 0) then
 		value["cut_state"] = value["cut_state"] - 1
@@ -115,9 +127,9 @@ function update_player(value, i)
 	if (value["no_hit"] > 0) then
 		value["no_hit"] = value["no_hit"] - 1
 	end
-	
 	move_player(value, i)
 	update_weapon_player(value, i)
+	update_powerup_player(value, i)
 	if (i and value["life"] <= 0) then
         value.alive = 0    
 	end
