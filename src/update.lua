@@ -42,7 +42,6 @@ function spawn_item()
 		px = math.random(x_fields - 1) + 1
 		py = math.random(y_fields - 1) + 1
 	    if (map[py][px].walkable == 1) then
-			print(px, py)
     		if (math.random(2) == 1) then
 				table.insert(powerups, {x = px, y = py, block = powerup_life_block})
 			else
