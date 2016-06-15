@@ -97,7 +97,8 @@ function  load_blocks()
         load_block("block/electric_box.png", 0, 0, electric_explode, reset_status, electric_explode),
 		load_block("block/coffre.png", 0, 0, shooted_on_nothing, reset_status, open_chest),
 		load_block("block/invincible.png", 1, 0, shooted_on_nothing, powerup_invincible, cut_on_nothing),
-		load_block("block/ammo.png", 1, 0, shooted_on_nothing, powerup_ammo, cut_on_nothing)}
+		load_block("block/ammo.png", 1, 0, shooted_on_nothing, powerup_ammo, cut_on_nothing),
+		load_block("block/one_direction.png", 1, 1, shooted_on_nothing, reset_status, cut_on_nothing)}
 end
 
 function load_animation()
