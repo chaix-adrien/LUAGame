@@ -54,10 +54,10 @@ function draw_fire(player)
 				end
 			end
 			if (hit == 1 or
-			blocks[map[math.floor(tmp_posy /
+			map[math.floor(tmp_posy /
 			tile_sizey) + 1]
 			[math.floor(tmp_posx /
-			tile_sizex) + 1]]
+			tile_sizex) + 1]
 			["crossable"] == 0) then
 				break
 			end
@@ -86,12 +86,12 @@ function cut_attack(player)
 			cut_sound:play()
 		end
 	end
-	blocks[map[math.floor(player["pos_y"])][math.floor(player["pos_x"])]]["cut_on"](j2, i2, player)
+	map[math.floor(player["pos_y"])][math.floor(player["pos_x"])]["cut_on"](j2, i2, player)
 	local tmp_x = math.floor(player["pos_x"] + 0.5 * math.cos(player["r"] - math.pi / 2))
 	local tmp_y = math.floor(player["pos_y"] + 0.5 * math.sin(player["r"] - math.pi / 2))
 	if (tmp_x > 0 and tmp_y > 0 and tmp_x <= x_fields and tmp_y <= y_fields 
 		and (tmp_x ~= math.floor(player["pos_x"]) or tmp_y ~= math.floor(player["pos_y"]))) then
-		blocks[map[tmp_y][tmp_x]]["cut_on"](tmp_x, tmp_y, player)
+		map[tmp_y][tmp_x]["cut_on"](tmp_x, tmp_y, player)
 	end
 	player["cut_state"] = 60
 end
@@ -133,8 +133,8 @@ function get_fire(value)
 				return player, 0
 			end
 		end
-		if (blocks[map[math.floor(tmp_posy / tile_sizey) + 1][math.floor(tmp_posx / tile_sizex) + 1]]["crossable"] == 0) then
-			blocks[map[math.floor(tmp_posy / tile_sizey) + 1][math.floor(tmp_posx / tile_sizex) + 1]]["shooted_on"](math.floor(tmp_posx / tile_sizex) + 1,  math.floor(tmp_posy / tile_sizey) + 1, player)
+		if (map[math.floor(tmp_posy / tile_sizey) + 1][math.floor(tmp_posx / tile_sizex) + 1]["crossable"] == 0) then
+			map[math.floor(tmp_posy / tile_sizey) + 1][math.floor(tmp_posx / tile_sizex) + 1]["shooted_on"](math.floor(tmp_posx / tile_sizex) + 1,  math.floor(tmp_posy / tile_sizey) + 1, player)
 			if (sprite_impact) then
 				table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = value.color})
 			end

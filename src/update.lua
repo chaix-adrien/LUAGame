@@ -6,13 +6,13 @@ function move_player(value, i)
 	local new_y = math.floor(value["pos_y"] + y * value["speed"])
 	if (math.abs(x) > 0.2 or math.abs(y) > 0.2) then
 		if (new_y <= y_fields and new_y >= 1) then
-			if (blocks[map[new_y][math.floor(value["pos_x"])]]["walkable"] == 1) then
+			if (map[new_y][math.floor(value["pos_x"])]["walkable"] == 1) then
 				value["pos_y"] = value["pos_y"] + y * value["speed"]
 				done = 1
 			end
 		end
 		if (new_x <= x_fields and new_x >= 1) then
-			if (blocks[map[math.floor(value["pos_y"])][new_x]]["walkable"] == 1) then
+			if (map[math.floor(value["pos_y"])][new_x]["walkable"] == 1) then
 				value["pos_x"] = value["pos_x"] + x * value["speed"]
 			end
 		end
@@ -21,7 +21,7 @@ function move_player(value, i)
 			if value["frame"] > 4.0 then value["frame"] = 1 end
 		end
 	end
-	blocks[map[math.floor(value["pos_y"])][math.floor(value["pos_x"])]]["walked_on"] (math.floor(value["pos_x"]), math.floor(value["pos_y"]), value)
+	map[math.floor(value["pos_y"])][math.floor(value["pos_x"])]["walked_on"] (math.floor(value["pos_x"]), math.floor(value["pos_y"]), value)
 end
 
 function update_element(element_blocks)
@@ -29,7 +29,7 @@ function update_element(element_blocks)
 		for i, block in pairs(element_blocks) do
 			block["state"] = block["state"] - 1
 			if (block["state"] <= 0) then
-				map[element_blocks[i]["y"]][element_blocks[i]["x"]] = 1
+				map[element_blocks[i]["y"]][element_blocks[i]["x"]] = blocks.floor
 				table.remove(element_blocks, i)
 			end
 		end
@@ -41,11 +41,11 @@ function spawn_item()
     repeat
 		x = math.random(x_fields - 1) + 1
 		y = math.random(y_fields - 1) + 1
-	    if (map[y][x] == 1) then
+	    if (map[y][x].type == "floor") then
     		if (math.random(2) == 1) then
-				map[y][x] = 11
+				map[y][x] = powerups.life
 			else
-    			map[y][x] = 12
+    			map[y][x] = powerupd.shield
 			end
 			item_spawn_sound:play()
 			done = 1

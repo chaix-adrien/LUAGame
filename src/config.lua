@@ -13,4 +13,4 @@ auto_reload = 1
 music_volume = 1
 sound_volume = 1
 fullscreen = false
-launch_on_menu = 1
+launch_on_menu = 0

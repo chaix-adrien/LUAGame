@@ -34,8 +34,8 @@ function draw_flames()
 		for i, block in pairs(fire_blocks) do
 			love.graphics.draw(fire_sprite[math.floor(fire_blocks[i]["state"] / 7) % 6 + 1], ((fire_blocks[i]["x"] - 1) * tile_sizex),
 			((fire_blocks[i]["y"] - 1) * tile_sizey), 0,
-			blocks[7]["scale_x"],
-			blocks[7]["scale_y"])
+			blocks.fire["scale_x"],
+			blocks.fire["scale_y"])
 		end	
 	end
 end		
@@ -45,8 +45,8 @@ function draw_electricity()
 		for i, block in pairs(electric_blocks) do
 			love.graphics.draw(electric_sprite[math.floor(electric_blocks[i]["state"] / 7) % 6 + 1], ((electric_blocks[i]["x"] - 1) * tile_sizex),
 				((electric_blocks[i]["y"] - 1) * tile_sizey), 0,
-				blocks[13]["scale_x"],
-				blocks[13]["scale_y"])
+				blocks.bolt_ball["scale_x"],
+				blocks.bolt_ball["scale_y"])
 		end	
 	end
 end		
@@ -58,8 +58,8 @@ end
 function draw_map()
 	for i = 1, x_fields, 1 do
 		for j = 1, y_fields, 1 do
-			if (map[j][i] ~= 7) then
-				draw_block(blocks[map[j][i]], i, j)
+			if (map[j][i].type ~= "fire") then
+				draw_block(map[j][i], i, j)
 			end
 		end
 	end

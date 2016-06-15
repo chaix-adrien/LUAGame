@@ -9,10 +9,10 @@ function shooted_on_nothing(x, y, player)
 end
 
 function shoot_on_brick(x, y, player)
-	if (map[y][x] == 3) then
-		map[y][x] = 2
-	elseif (map[y][x] == 2) then
-		map[y][x] = 1
+	if (map[y][x].type == "brick") then
+		map[y][x] = blocks.brocken_brick
+	elseif (map[y][x].type == "brocken_brick") then
+		map[y][x] = blocks.floor
 	end
 end 
 
@@ -38,34 +38,34 @@ function explode(x, y, player)
 			end
 		end
 	end
-	map[y][x] = 5
+	map[y][x] = blocks.hole
 end
 
 function electric_explode(x, y, player)
 	electric_explode_sound:play()
 	for i = y - 1, 1, -1 do
-		if (map[i][x] == 1) then
+		if (map[i][x].type == "floor") then
 			turn_block_to_electric(x, i, player)
 		else
 			break
 		end
 	end
 	for i = y + 1, y_fields, 1 do
-		if (map[i][x] == 1) then
+		if (map[i][x].type == "floor") then
 			turn_block_to_electric(x, i, player)
 		else
 			break
 		end
 	end
 	for i = x - 1, 1, -1 do
-		if (map[y][i] == 1) then
+		if (map[y][i].type == "floor") then
 			turn_block_to_electric(i, y, player)
 		else
 			break
 		end
 	end
 	for i = x + 1, x_fields, 1 do
-		if (map[y][i] == 1) then
+		if (map[y][i].type == "floor") then
 			turn_block_to_electric(i, y, player)
 		else
 			break
@@ -105,9 +105,9 @@ end
 function waterbomb(x, y, player)
 	for i = y - 1, y + 1, 1 do
 		for j = x - 1, x + 1, 1 do
-			if (((i > 0 and i < y_fields and j > 0 and j < x_fields and map[i][j] == 1) and math.random(3) == 2) or (i == y and j == x)) then
+			if (((i > 0 and i < y_fields and j > 0 and j < x_fields and map[i][j].type == "floor") and math.random(3) == 2) or (i == y and j == x)) then
 				waterbomb_sound:play()
-				map[i][j] = 6
+				map[i][j] = blocks.mud
 			end
 		end
 	end
@@ -115,7 +115,7 @@ end
 
 function powerup_life(x, y, player)
 	if (player["life"] ~= 100) then
-		map[y][x] = 1
+		map[y][x] = blocks.floor 
 		powerup_life_sound:play()
 	end
 	player["life"] = (player["life"] + 40)
@@ -126,7 +126,7 @@ end
 
 function powerup_shield(x, y, player)
 	if (player["shield_life"] < 3) then
-		map[y][x] = 1
+		map[y][x] = blocks.floor
 		powerup_shield_sound:play()
 		player["shield_life"] = 3
 	end
@@ -154,9 +154,9 @@ end
 
 function open_chest(x, y, player)
 	if (math.random(2) == 2) then
-		map[y][x] = 16
+		map[y][x] = blocks.floor
 	else
-	map[y][x] = 17
+	map[y][x] = blocks.floor
 	end
 end
 
@@ -168,19 +168,19 @@ end
 --
 
 function turn_block_to_fire(px, py, player)
-	if (map[py][px] ~= 5) then
-		map[py][px] = 7
+	if (map[py][px].type ~= "mud") then
+		map[py][px] = blocks.fire
 	end
 	table.insert(fire_blocks, {x = px, y = py, state = fire_time})
 end
 
 function turn_block_to_electric(px, py, player)
-	if (map[py][px] ~= 5) then
-		map[py][px] = 13
+	if (map[py][px].type ~= "mud") then
+		map[py][px] = blocks.bolt_ball
 	end
 	table.insert(electric_blocks, {x = px, y = py, state = fire_time})
 end
 
 function turn_block_to_floor(x, y)
-	map[y][x] = 1
+	map[y][x] = blocks.floor
 end

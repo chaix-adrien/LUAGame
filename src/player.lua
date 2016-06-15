@@ -43,7 +43,7 @@ function spawn_players(players, map, x_lim, y_lim)
 		while (players[i]["pos_x"] == 0 and players[i]["pos_y"] == 0) do
 			local x = love.math.random(x_lim)
 			local y = love.math.random(y_lim)
-			if (map[y][x] == 1) then
+			if (map[y][x].type == "floor") then
 				players[i]["pos_x"] = x + 0.5
 				players[i]["pos_y"] = y + 0.5
 			end
