@@ -24,10 +24,10 @@ function move_player(value, i)
 	map[math.floor(value["pos_y"])][math.floor(value["pos_x"])]["walked_on"] (math.floor(value["pos_x"]), math.floor(value["pos_y"]), value)
 end
 
-function update_element(element_blocks)
+function update_element(element_blocks, dt)
 	if fire_blocks then
 		for i, block in pairs(element_blocks) do
-			block["state"] = block["state"] - 1
+			block["state"] = block["state"] - dt
 			if (block["state"] <= 0) then
 				map[element_blocks[i]["y"]][element_blocks[i]["x"]] = blocks.floor
 				table.remove(element_blocks, i)
@@ -41,7 +41,7 @@ function spawn_item()
     repeat
 		px = math.random(x_fields - 1) + 1
 		py = math.random(y_fields - 1) + 1
-	    if (map[py][px].type == "floor") then
+	    if (map[py][px].walkable == 1) then
 			print(px, py)
     		if (math.random(2) == 1) then
 				table.insert(powerups, {x = px, y = py, block = powerup_life_block})
@@ -57,8 +57,8 @@ end
 
 item_spawn = item_spawn_rate
 
-function update_item_spawn()
-	item_spawn = item_spawn - 1
+function update_item_spawn(dt)
+	item_spawn = item_spawn - dt
 	if (item_spawn <= 0) then
 		item_spawn = item_spawn_rate
         spawn_item()		
@@ -69,10 +69,10 @@ function shoot(player)
 	local have_shield = 0
     target, have_shield = get_fire(player)
     player["ammo"] = player["ammo"] - 1
-	if (target and have_shield == 0 and target["no_hit"] == 0) then
+	if (target and have_shield == 0 and target["no_hit"] <= 0) then
 		laser2:play()
 		target["life"] = target["life"] - 20
-		target["no_hit"] = 120
+		target["no_hit"] = 2
 	else
 		laser:play()
 	end
@@ -83,7 +83,7 @@ function update_weapon_player(value, i)
 	if (math.abs(joysticks[i]:getGamepadAxis("righty")) > 0.4 or math.abs(joysticks[i]:getGamepadAxis("rightx")) > 0.4) then
 		value["r"] = math.atan2(joysticks[i]:getGamepadAxis("righty"), joysticks[i]:getGamepadAxis("rightx")) + math.pi / 2
 	end
-	if (value["ammo"] > 0  and value["shield"] == 0 and joysticks[i]:getGamepadAxis("triggerright") > 0.8 and value["shoot"] == 0 and value["cooldown"] == 0) then
+	if (value["ammo"] > 0  and value["shield"] == 0 and joysticks[i]:getGamepadAxis("triggerright") > 0.8 and value["shoot"] == 0 and value["cooldown"] <= 0) then
            shoot(value)
 	elseif (joysticks[i]:getGamepadAxis("triggerright") < 0.8 and value["shoot"] == 1) then
 		value["shoot"] = 0
@@ -100,7 +100,7 @@ function update_weapon_player(value, i)
 	if (joysticks[i]:isGamepadDown("x") and value["shoot"] == 0) then
 		reload(value, reload_sound)
 	end
-	if (joysticks[i]:isGamepadDown("b") and value["shoot"] == 0 and value["cut_state"] == 0 and value["shield"] == 0) then
+	if (joysticks[i]:isGamepadDown("b") and value["shoot"] == 0 and value["cut_state"] <= 0 and value["shield"] == 0) then
 		cut_attack(value)
 	end
 	if (auto_reload == 1 and value["ammo"] == 0) then
@@ -117,15 +117,15 @@ function update_powerup_player(player)
 	end
 end
 
-function update_player(value, i)
+function update_player(value, i, dt)
 	if (value["cut_state"] > 0) then
-		value["cut_state"] = value["cut_state"] - 1
+		value["cut_state"] = value["cut_state"] - dt
 	end
 	if (value["cooldown"] > 0) then
-		value["cooldown"] = value["cooldown"] - 1
+		value["cooldown"] = value["cooldown"] - dt
 	end
 	if (value["no_hit"] > 0) then
-		value["no_hit"] = value["no_hit"] - 1
+		value["no_hit"] = value["no_hit"] - dt
 	end
 	move_player(value, i)
 	update_weapon_player(value, i)
@@ -135,27 +135,22 @@ function update_player(value, i)
 	end
 end
 
-function update_players()
+function update_players(dt)
 	for i, value in pairs(players) do
 		if (value.alive == 1) then
-			update_player(value, i)
+			update_player(value, i, dt)
 		end
 	end
 end
 
-function update_music()
-  	 if (not music) then
- 	  	music = load_sound("music/music" .. tostring(math.random(4)) .. ".mp3", 0.7)
-  	end
-end
-
+total_time = 0
 function update_game(dt)
-    act_time = os.clock()
-	update_players()
-	update_element(fire_blocks)
-	update_element(electric_blocks)
-	update_item_spawn()
-    update_music()
+	frame_speed = default_speed / (love.timer.getFPS() / 60)
+	update_players(dt)
+	total_time = 0
+	update_element(fire_blocks, dt)
+	update_element(electric_blocks, dt)
+	update_item_spawn(dt)
 	if (love.keyboard.isDown("space")) then
 		restart()
 	end

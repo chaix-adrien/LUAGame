@@ -51,6 +51,18 @@ function draw_electricity()
 	end
 end		
 
+function draw_element(element, sprite, block)
+	if (element) then
+		for i, elem in pairs(element) do
+			love.graphics.draw(sprite[math.floor(element[i]["state"] * 10) % #sprite + 1], ((element[i]["x"] - 1) * tile_sizex),
+				((element[i]["y"] - 1) * tile_sizey), 0,
+				block["scale_x"],
+				block["scale_y"])
+				-- TODO stockage element mieu (stocker les sprite dans le block)
+		end	
+	end
+end
+
 function draw_block(block, pos_x, pos_y)
 	love.graphics.draw(block["sprite"], ((pos_x - 1) * tile_sizex), ((pos_y - 1) * tile_sizey), 0, block["scale_x"], block["scale_y"])
 end
@@ -69,8 +81,8 @@ function draw_map()
 			end
 		end
 	end
-	draw_flames()
-	draw_electricity()
+	draw_element(fire_blocks, fire_sprite, blocks.fire)
+	draw_element(electric_blocks, electric_sprite, blocks.bolt_ball)
 	draw_powerups()
 end
 
@@ -101,8 +113,8 @@ function draw_players(players, walk)
 	local new_r = 0
 	for i, player in pairs(players) do
 		if (player["alive"] == 1) then
-			if (player["cut_state"] > 50) then
-	 			new_r = player["r"] + math.pi * 2 * ((player["cut_state"] - 50) / 10)
+			if (player["cut_state"] > 50 / 60) then
+	 			new_r = player["r"] + math.pi * 2 * ((player["cut_state"] - 50 / 60) / 0.1)
  			else
  				draw_fire(player)
  	 			new_r = player["r"]
@@ -111,7 +123,7 @@ function draw_players(players, walk)
 			tmp_x, tmp_y = map_to_pixel(player["pos_x"], player["pos_y"])
 			tmp_x, tmp_y = rotate_pos(tmp_x, tmp_y, new_r, walk)		
 				love.graphics.setColor(player["color"][1], player["color"][2], player["color"][3], 255)
-			if (math.floor(player["no_hit"] / 10) % 3 ~= 1) then
+			if (math.floor(player["no_hit"] * 10) % 3 ~= 1) then
 				love.graphics.draw(walk[math.floor(player["frame"])], tmp_x, tmp_y, new_r, player["scale_x"], player["scale_y"])
 			end
 			draw_player_life(player)

@@ -5,7 +5,7 @@
 --
 
 function shooted_on_nothing(x, y, player)
-	return nil
+	return 0
 end
 
 function shoot_on_brick(x, y, player)
@@ -14,11 +14,13 @@ function shoot_on_brick(x, y, player)
 	elseif (map[y][x].type == "brocken_brick") then
 		map[y][x] = blocks.floor
 	end
+	return (1)
 end 
 
 function break_box(x, y, player)
 	box_sound:play()
 	turn_block_to_fire(x, y, player)
+	return (1)
 end
 
 function explode(x, y, player)
@@ -32,13 +34,14 @@ function explode(x, y, player)
 				for p, player in pairs(players) do
 					if (math.floor(player["pos_x"]) == j and math.floor(player["pos_y"]) == i) then
 						player["life"] = player["life"] - 40
-						player["no_hit"] = 120
+						player["no_hit"] = 2
 					end
 				end
 			end
 		end
 	end
 	map[y][x] = blocks.hole
+	return (1)
 end
 
 function electric_explode(x, y, player)
@@ -72,6 +75,7 @@ function electric_explode(x, y, player)
 		end
 	end
 	turn_block_to_electric(x, y, player)
+	return (1)
 end
 
 --
@@ -81,13 +85,13 @@ end
 --
 
 function reset_status(x, y, player)
-	player["speed"] = 0.1
+	player["speed"] = frame_speed
 end
 
 function fire_damage(x, y, player)
-	if (player["no_hit"] == 0) then
+	if (player["no_hit"] <= 0) then
 		player["life"] = player["life"] - 10
-		player["no_hit"] = 60
+		player["no_hit"] = 1
 	end
 end
 
@@ -99,7 +103,7 @@ function electric_damage(x, y, player)
 end
 
 function mud(x, y, player)
-	player["speed"] = 0.03
+	player["speed"] = default_speed / 3
 end
 
 function waterbomb(x, y, player)
@@ -133,7 +137,7 @@ function powerup_shield(x, y, player)
 end
 
 function powerup_invincible(x, y, player)
-	player["no_hit"] = 120
+	player["no_hit"] = 2
 end
 
 function powerup_ammo(x, y, player)
@@ -171,6 +175,7 @@ function turn_block_to_fire(px, py, player)
 		map[py][px] = blocks.fire
 	end
 	table.insert(fire_blocks, {x = px, y = py, state = fire_time})
+	return (1)
 end
 
 function turn_block_to_electric(px, py, player)
@@ -178,8 +183,10 @@ function turn_block_to_electric(px, py, player)
 		map[py][px] = blocks.bolt_ball
 	end
 	table.insert(electric_blocks, {x = px, y = py, state = fire_time})
+	return (1)
 end
 
 function turn_block_to_floor(x, y)
 	map[y][x] = blocks.floor
+	return (1)
 end

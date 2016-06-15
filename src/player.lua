@@ -9,14 +9,14 @@ function create_player(player_name, img)
 		shield = 0, shield_life = 3,
 		scale_x = (screen_w / img:getWidth() / x_fields),
 		scale_y = (screen_h / img:getHeight() / y_fields),
-		speed = 0.1,
+		speed = frame_speed,
 		life = 100,
 		shoot = 0,
 		ammo = 4,
 		frame = 1,
 		cooldown = 0,
 		color = {love.math.random(155) + 100, love.math.random(155) + 100, love.math.random(155) + 100},
-		no_hit = 128,
+		no_hit = 128 / 60,
 		cut_state = 0}
 	return (player)
 end
@@ -32,7 +32,7 @@ function reset_player(player)
 	player["shoot"] = 0
 	player["ammo"] = 4
 	player["cooldown"] = 0
-	player["no_hit"] = 128
+	player["no_hit"] = 128 / 60
 	player["cut_state"] = 0
 	player["scale_x"] = (screen_w / walk[1]:getWidth() / x_fields)
 	player["scale_y"] = (screen_h / walk[1]:getHeight() / y_fields)
@@ -54,7 +54,7 @@ end
 function reload(player, sample)
 	if (player["ammo"] < 4) then
 		player["ammo"] = 4
-		player["cooldown"] = 50
+		player["cooldown"] = 50 / 60
 		sample:play()
 	end
 end

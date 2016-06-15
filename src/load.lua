@@ -86,6 +86,13 @@ function load_block(typeof, name, walkability, cross, shoot, walk, cut)
 	return (block)
 end
 
+function load_powerup(typeof, name, walkability, cross, walk)
+	local img = love.graphics.newImage(name)
+	sx, sy = get_sprite_scale(img)
+	local powerup = {type = typeof, sprite = img, scale_x = sx, scale_y = sy, walkable = walkability, walked_on = walk}
+	return (powerup)
+end
+
 function  load_blocks()
     blocks = {floor = load_block("floor", "block/floor.png", 1, 1, shooted_on_nothing, reset_status, cut_on_nothing),
 	    brocken_brick = load_block("brocken_brick","block/broken_brick.png", 0, 0, shoot_on_brick, reset_status, shoot_on_brick),
@@ -101,10 +108,10 @@ function  load_blocks()
         electric_box = load_block("electric_box", "block/electric_box.png", 0, 0, electric_explode, reset_status, electric_explode),
 		chest = load_block("chest", "block/coffre.png", 0, 0, shooted_on_nothing, reset_status, open_chest)}
 
-		powerup_life_block = load_block("PU_life", "block/life.png", 1, 1, turn_block_to_floor, powerup_life, turn_block_to_floor)
-		powerup_shield_block = load_block("PU_shield", "block/shield.png", 1, 1, turn_block_to_floor, powerup_shield, turn_block_to_floor)
-		powerup_ammo_block = load_block("PU_ammo", "block/ammo.png", 1, 1, turn_block_to_floor, powerup_ammo, turn_block_to_floor)
-		powerup_invincible_block = load_block("PU_invincible", "block/invincible.png", 1, 1, turn_block_to_floor, powerup_invincible, turn_block_to_floor)
+		powerup_life_block = load_powerup("PU_life", "block/life.png", 1, 1, powerup_life)
+		powerup_shield_block = load_powerup("PU_shield", "block/shield.png", 1, 1, powerup_shield)
+		powerup_ammo_block = load_powerup("PU_ammo", "block/ammo.png", 1, 1, powerup_ammo)
+		powerup_invincible_block = load_powerup("PU_invincible", "block/invincible.png", 1, 1,powerup_invincible)
 end
 
 function load_animation()
