@@ -208,6 +208,9 @@ function update_mob_only_frame(mob, dt)
 	if (mob.frame > #mob.sprite) then
 		mob.frame = 1
 	end
+	--temp
+	mob.r = mob.r + 0.1
+	--
 end
 
 
@@ -223,7 +226,10 @@ function walk_mob_hit(player, mob)
 end
 
 function draw_mob_basic(mob)
-	love.graphics.draw(mob.sprite[math.floor(mob.frame)], ((mob.pos.x - 1) * tile_sizex), ((mob.pos.y - 1) * tile_sizey), 0, mob.scale.x, mob.scale.y)
+	print(mob.r)
+	px, py = map_to_pixel(mob.pos.x, mob.pos.y)
+	px, py = rotate_pos(px, py, mob.r, mob.sprite[math.floor(mob.frame)])
+	love.graphics.draw(mob.sprite[math.floor(mob.frame)], px, py, mob.r, mob.scale.x, mob.scale.y)
 end
 
 
@@ -239,10 +245,11 @@ function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, dra
 				update = update_mo,
 				draw = draw_mo,
 				shooted_on = shoot_o, 
-				moved_on = move_o,
+				walked_on = move_o,
 				cut_on = cut_o,
 				walkable = walkab, 
 				crossable = crossab,
+				r = 0,
 				size = {x = size_x, y = size_y},
 				pos = {x = pos_x, y = pos_y},
 				scale = {x = (tile_sizex / sprit[1]:getWidth() * size_x), y = (tile_sizey / sprit[1]:getHeight() * size_y)}}

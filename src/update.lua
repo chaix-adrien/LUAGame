@@ -1,10 +1,10 @@
 function walked_on_mobs(player)
 	for i, mob_type in pairs(mobs) do
 		for j, mob in pairs(mob_type) do
-			local pmob = {x = math.floor(mob.pos.x), y = math.floor(mob.pos.y)}
-			if (player.pos_x > mob.pos.x and player.pos.x < mob.pos.x + mob.size.x and
-				player.pos_y > mob.pos.y and player.pos.y < mob.pos.y + mob.size.y)
+			if (player.pos_x > mob.pos.x and player.pos_x < (mob.pos.x + mob.size.x)
+			and player.pos_y > mob.pos.y and player.pos_y < (mob.pos.y + mob.size.y)) then
 				mob.walked_on(player, mob)
+			end
 		end
 	end
 end
@@ -123,7 +123,7 @@ function update_weapon_player(value, i)
 	end
 end
 
-function walked_on_poweruo(player)
+function walked_on_powerup(player)
 	for i, powerup in pairs(powerups) do
 		if (math.floor(player.pos_x) == powerup.x and math.floor(player.pos_y) == powerup.y) then
 			powerup.block.walked_on(powerup.x, powerup.y, player)

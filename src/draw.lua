@@ -11,6 +11,7 @@ function draw_impact(impact, sprite_impact)
 			table.remove(impact, i)
 		end
 	end
+	love.graphics.setColor(255, 255, 255, 255)
 end
 
 function draw_victory()
@@ -149,7 +150,7 @@ end
 function draw_game()
 	draw_map()
 	draw_impact(impact, sprite_impact)
-	draw_players(players, walk)
 	draw_mobs()
 	draw_victory()
+	draw_players(players, walk)
 end
