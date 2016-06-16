@@ -89,20 +89,31 @@ end
 --
 --
 
+function cut_on_mobs(player, pos)
+	for i, mob_type in pairs(mobs) do
+		for j, mob in pairs(mob_type) do
+			if (is_on_mob(pos.x, pos.y, mob) == 1) then
+				mob.cuted_on(player, mob, i, j)
+			end
+		end
+	end
+end
+
 function cut_attack(player)
-	j2, i2 = map_to_pixel(player["pos_x"], player["pos_y"])
 	for i, target in pairs(players) do
-		j, i = map_to_pixel(target["pos_x"], target["pos_y"])
 		if (target["name"] ~= player["name"] and
-			math.sqrt(math.pow(j - j2, 2) + math.pow(i - i2, 2)) < tile_sizey) then
+			math.sqrt(math.pow(target.pos_x - player.pos_x, 2) + math.pow(target.pos_y - player.pos_y, 2)) < 1) then
 			target["life"] = target["life"] - 10
 			target["no_hit"] = 2
 			cut_sound:play()
 		end
 	end
 	map[math.floor(player["pos_y"])][math.floor(player["pos_x"])]["cut_on"](j2, i2, player)
-	local tmp_x = math.floor(player["pos_x"] + 0.5 * math.cos(player["r"] - math.pi / 2))
-	local tmp_y = math.floor(player["pos_y"] + 0.5 * math.sin(player["r"] - math.pi / 2))
+	local float = {x = player["pos_x"] + 0.5 * math.cos(player["r"] - math.pi / 2),
+	y = player["pos_y"] + 0.5 * math.sin(player["r"] - math.pi / 2)}
+	local tmp_x = math.floor(float.x)
+	local tmp_y = math.floor(float.y)
+	cut_on_mobs(player, float)
 	if (tmp_x > 0 and tmp_y > 0 and tmp_x <= x_fields and tmp_y <= y_fields 
 		and (tmp_x ~= math.floor(player["pos_x"]) or tmp_y ~= math.floor(player["pos_y"]))) then
 		map[tmp_y][tmp_x]["cut_on"](tmp_x, tmp_y, player)

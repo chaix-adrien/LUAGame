@@ -9,7 +9,6 @@ function shooted_on_nothing(x, y, player)
 end
 
 function shoot_on_brick(x, y, player)
-	print("brick", map[y][x].type, map[y][x].state, blocks.brick.state)
 	if (map[y][x].type == "brick" and map[y][x].state == 0) then
 		map[y][x].state = 1
 		map[y][x].frame = 2
@@ -156,7 +155,7 @@ end
 
 function open_chest(px, py, player)
 	if (math.random(2) == 2) then
-		table.insert(powerups, {x = px, y = py, block = powerup_invincible_block})
+		table.insert(powerups, {x = px, y = py, state = 0, block = powerup_invincible_block})
 	else
 		table.insert(powerups, {x = px, y = py, state = 0, block = powerup_ammo_block})
 	end
