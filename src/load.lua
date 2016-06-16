@@ -199,43 +199,6 @@ function load_sounds()
 	item_spawn_sound = load_sound("soundeffect/item_spawn.wav", 1, "stream")
 end
 
-function move_mob_fix(mob, dt)
-	return nil
-end
-
-function update_mob_only_frame(mob, dt)
-	mob.frame = mob.frame + 2 * frame_speed
-	if (mob.frame > #mob.sprite) then
-		mob.frame = 1
-	end
-	mob.r = mob.r + 0.1
-end
-
-
-function move_mob_rand(mob)
-	mob.pos.x = mob.pos.x + math.random() * 0.1
-	mob.pos.y = mob.pos.y + math.random() * 0.1
-	-- TODO true rand verifier pos until
-end
-
-function walk_mob_hit(player, mob)
-	player.life = player.life - 20
-	player.no_hit = 1
-end
-
-function draw_mob_basic(mob)
-	px, py = map_to_pixel(mob.pos.x, mob.pos.y)
-	px, py = rotate_pos(px, py, mob.r, mob.sprite[math.floor(mob.frame)])
-	love.graphics.draw(mob.sprite[math.floor(mob.frame)], px, py, mob.r, mob.scale.x, mob.scale.y)
-end
-
-function kill_mob(player, mob, i, j)
-	-- INDEX
-	print("KILL")
-	table.remove(mobs[i], j)
-end
-
-
 function create_mobs()
 	mobs = {}
 	for i, mob in pairs(mobs_ref) do
@@ -255,7 +218,7 @@ function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, dra
 				draw = draw_mo,
 				shooted_on = shoot_o, 
 				walked_on = move_o,
-				cut_on = cut_o,
+				cuted_on = cut_o,
 				walkable = walkab, 
 				crossable = crossab,
 				r = 0,
@@ -267,7 +230,7 @@ end
 
 function load_mobs()
 	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1,
-	move_mob_fix, update_mob_only_frame, draw_mob_basic, kill_mob, walk_mob_hit, cut_on_nothing, 0, 0, 1, 1, 5, 5)}
+	move_mob_fix, update_mob_only_frame, draw_mob_basic, kill_mob, walk_mob_hit, kill_mob, 0, 0, 1, 1, 5, 5)}
 end
 
 function launch_quick_party()
