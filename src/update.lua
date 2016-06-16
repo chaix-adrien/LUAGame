@@ -43,9 +43,9 @@ function spawn_item()
 		py = math.random(y_fields - 1) + 1
 	    if (map[py][px].walkable == 1) then
     		if (math.random(2) == 1) then
-				table.insert(powerups, {x = px, y = py, block = powerup_life_block})
+				table.insert(powerups, {x = px, y = py, state = 0, block = powerup_life_block})
 			else
-				table.insert(powerups, {x = px, y = py, block = powerup_shield_block})
+				table.insert(powerups, {x = px, y = py, state = 0, block = powerup_shield_block})
 			end
 			item_spawn_sound:play()
 			done = 1
@@ -56,11 +56,14 @@ end
 
 item_spawn = item_spawn_rate
 
-function update_item_spawn(dt)
+function update_item(dt)
 	item_spawn = item_spawn - dt
 	if (item_spawn <= 0) then
 		item_spawn = item_spawn_rate
         spawn_item()		
+	end
+	for i, item in pairs(powerups) do
+		item.state = item.state + dt
 	end
 end
 
@@ -168,7 +171,7 @@ function update_game(dt)
 	total_time = 0
 	update_element(fire_blocks, dt)
 	update_element(electric_blocks, dt)
-	update_item_spawn(dt)
+	update_item(dt)
 	if (love.keyboard.isDown("space")) then
 		restart()
 	end

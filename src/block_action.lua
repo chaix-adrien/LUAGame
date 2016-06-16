@@ -158,7 +158,7 @@ function open_chest(px, py, player)
 	if (math.random(2) == 2) then
 		table.insert(powerups, {x = px, y = py, block = powerup_invincible_block})
 	else
-		table.insert(powerups, {x = px, y = py, block = powerup_ammo_block})
+		table.insert(powerups, {x = px, y = py, state = 0, block = powerup_ammo_block})
 	end
 	turn_block_to_floor(px, py)
 end

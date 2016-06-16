@@ -67,9 +67,18 @@ function draw_block(block, pos_x, pos_y)
 	love.graphics.draw(block.sprite[math.floor(block.frame)], ((pos_x - 1) * tile_sizex), ((pos_y - 1) * tile_sizey), 0, block["scale_x"], block["scale_y"])
 end
 
+function draw_powerup(powerup, x, y)
+		local sx = powerup.block.scale_x - (0.1 * powerup.block.scale_x *  math.abs(math.cos(powerup.state)))
+		local sy = powerup.block.scale_y - (0.1 * powerup.block.scale_y * math.abs(math.cos(powerup.state)))
+		local px = ((powerup.x - 1) * tile_sizex) + (powerup.block.scale_x - sx) * tile_sizex / 2
+		local py = ((powerup.y - 1) * tile_sizey) + (powerup.block.scale_y - sy) * tile_sizey / 2
+		love.graphics.draw(powerup.block.sprite, px, py,
+		0, sx, sy)
+end
+
 function draw_powerups()
 	for i, powerup in pairs(powerups) do
-		love.graphics.draw(powerup.block.sprite, ((powerup.x - 1) * tile_sizex), ((powerup.y - 1) * tile_sizey), 0, powerup.block["scale_x"], powerup.block["scale_y"])
+		draw_powerup(powerup, powerup.x, powerup.y)
 	end
 end
 
