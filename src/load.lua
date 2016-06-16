@@ -84,6 +84,8 @@ function  restart()
 	game_victory = 0
 	item_spawn = item_spawn_rate
 	set_volumes()
+	create_mobs()
+	table.insert(mobs.zombie, copy_table(mobs_ref.zombie))
 	return 0
 end
 
@@ -197,6 +199,47 @@ function load_sounds()
 	item_spawn_sound = load_sound("soundeffect/item_spawn.wav", 1, "stream")
 end
 
+function load_mob(nam, lif, sprit, statu, fram, update_mov, update_mo, draw_mo, shoot_o, move_o, cut_o, walkab, crossab, size_x, size_y, pos_x, pos_y)
+	local mob = {type = nam,
+				life = lif,
+				sprite = sprit,
+				status = statu,
+				frame = fram,
+				update_move = update_mov,
+				update_mob = update_mo,
+				draw_mob = draw_mo,
+				shooted_on = shoot_o, 
+				moved_on = move_o,
+				cut_on = cut_o,
+				walkable = walkab, 
+				crossable = crossab,
+				size = {x = size_x, y = size_y},
+				pos = {x = pos_x, y = pos_y},
+				scale = {x = (tile_sizex / sprit[1]:getWidth() * size_x), y = (tile_sizey / sprit[1]:getHeight() * size_y)}}
+	return (mob)
+end
+
+
+function move_mob_rand(mob)
+	mob.pos.x = mob.pos.x + math.random() * 0.1
+	mob.pos.y = mob.pos.y + math.random() * 0.1
+end
+
+function draw_mob_basic(mob)
+	love.graphics.draw(mob.sprite[math.floor(mob.frame)], ((mob.pos.x - 1) * tile_sizex), ((mob.pos.y - 1) * tile_sizey), 0, mob.scale.x, mob.scale.y)
+end
+
+function create_mobs()
+	mobs = {}
+	for i, mob in pairs(mobs_ref) do
+		mobs[mob.type] = {}
+	end
+end
+
+function load_mobs()
+	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, move_mob_rand, move_mob_rand, draw_mob_basic, shoot_on_nothing, move_mob_rand, cut_on_nothing, 0, 0, 1, 1, 5, 5)}
+end
+
 function launch_quick_party()
 	if (restart() == 1) then
 		return
@@ -209,14 +252,18 @@ function love.load()
 	math.randomseed(os.time())
 	walk = {love.graphics.newImage("misc/walk_one.png"), love.graphics.newImage("misc/walk_two.png"),
 	love.graphics.newImage("misc/walk_three.png"), love.graphics.newImage("misc/walk_two.png")}
+	tile_sizex = screen_w / x_fields
+	tile_sizey = screen_h / y_fields
     load_animation()
 	load_blocks()
 	load_impact()
 	load_sounds()
+	load_mobs()
 	load_gui()
 	powerups = {}
 	love.window.setMode(screen_w, screen_h)
 	love.window.setFullscreen(fullscreen, "exclusive")
+	load_mobs()
 	if (launch_on_menu == 1) then
 		launch_menu(main_menu)
 	else

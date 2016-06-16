@@ -138,9 +138,18 @@ function draw_players(players, walk)
 	end
 end
 
+function draw_mobs()
+	for i, mob_type in pairs(mobs) do
+		for i, mob in pairs(mob_type) do
+			mob.draw_mob(mob)
+		end
+	end
+end
+
 function draw_game()
 	draw_map()
 	draw_impact(impact, sprite_impact)
 	draw_players(players, walk)
+	draw_mobs()
 	draw_victory()
 end
