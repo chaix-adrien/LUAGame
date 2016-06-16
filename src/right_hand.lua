@@ -1,6 +1,7 @@
 function simplify_map()
     local out = {}
     for y = 1, #map, 1 do
+    print("for")
         local to_add = {}
         for x = 1, #(map[y]), 1 do
             if (map[y][x].walkable == 1) then
@@ -43,7 +44,7 @@ function maze(mob)
     local path = {}
     local limit = 0
     while ((tmp_pos.x ~= player_pos.x) or (tmp_pos.y ~= player_pos.y)) do  
-        print("pos x and y", tmp_pos.x, tmp_pos.y)  
+        --print("pos x and y", tmp_pos.x, tmp_pos.y)  
         tmp_map[tmp_pos.y][tmp_pos.x] = #path
         if (player_pos.x > tmp_pos.x and tmp_map[tmp_pos.y][tmp_pos.x + 1] == 0) then
             table.insert(path, tmp_pos)        
@@ -89,10 +90,24 @@ function maze(mob)
         end
     limit = limit + 1
     end
-    local to_move = {x = (tmp_pos.x - mob.pos.x), y = (tmp_pos.y - mob.pos.y)}
-    to_move.x = (to_move.x / math.abs(to_move.x)) * frame_speed * mob.speed
-    to_move.y = (to_move.y / math.abs(to_move.y)) * frame_speed * mob.speed
-    mob.pos.x = to_move.x
-    mob.pos.y = to_move.y
-    print(mob.pos.x, mob.pos.y)
+    if (#path == 0) then
+        return (0)
+    end
+    local to_move = {x = (path[1].x - mob.pos.x), y = (path[1].y - mob.pos.y)}
+    to_move.x = (to_move.x / math.abs(to_move.x)) * frame_speed * mob.speed / 3
+    to_move.y = (to_move.y / math.abs(to_move.y)) * frame_speed * mob.speed / 3
+    --print("frame speed", frame_speed, "mob.speed", mob.speed)
+    --print("to move", to_move.x, to_move.y)
+    --print("before", mob.pos.x, mob.pos.y)
+    local tmp_y = math.floor(mob.pos.y + to_move.y)
+    local tmp_x = math.floor(mob.pos.x + to_move.x)
+    if (tmp_y > 1 and tmp_y <= #map and map[tmp_y][math.floor(mob.pos.x)].walkable == 1) then
+        mob.pos.y = (mob.pos.y + to_move.y)        
+    end
+    if (tmp_x > 1 and tmp_x <= #(map[1]) and map[math.floor(mob.pos.y)][tmp_x].walkable == 1) then
+        mob.pos.x = (mob.pos.x + to_move.x)        
+    end    
+    --mob.pos.x = mob.pos.x + to_move.x
+    --mob.pos.y = mob.pos.y + to_move.y
+    --print("after", mob.pos.x, mob.pos.y)        
 end

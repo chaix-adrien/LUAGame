@@ -174,7 +174,14 @@ end
 
 total_time = 0
 function update_game(dt)
-	frame_speed = default_speed / (love.timer.getFPS() / 60)
+	if (love.timer.getFPS() > 10) then
+		frame_speed = default_speed / (love.timer.getFPS() / 60)
+	else
+		frame_speed = 0.01
+	end
+	if (math.abs(frame_speed) < 0.01) then
+		frame_speed = 0.01
+	end
 	update_map(dt)
 	update_mobs(dt)
 	update_players(dt)
