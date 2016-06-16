@@ -35,6 +35,22 @@ function set_laser_color(value)
 	end
 end
 
+function shoot_on_mobs(player, px, py, call_func)
+	px = (px / tile_sizex) + 1
+	py = (py / tile_sizey) + 1
+	for i, mob_type in pairs(mobs) do
+		for j, mob in pairs(mob_type) do
+			if (is_on_mob(px, py, mob) == 1) then
+				if (call_func == 1) then
+					mob.shooted_on(player, mob, i, j)
+				end			
+				return (1)
+			end
+		end
+	end
+	return (0)
+end
+
 function draw_fire(player)
 	if (player["shield"] and player["shield_life"]) then
 		draw_shield(player)
@@ -53,12 +69,10 @@ function draw_fire(player)
 					break
 				end
 			end
-			if (hit == 1 or
-			map[math.floor(tmp_posy /
-			tile_sizey) + 1]
-			[math.floor(tmp_posx /
-			tile_sizex) + 1]
-			["crossable"] == 0) then
+			if (shoot_on_mobs(player, tmp_posx, tmp_posy, 0) == 1) then
+				hit = 1
+			end
+			if (hit == 1 or map[math.floor(tmp_posy /tile_sizey) + 1][math.floor(tmp_posx / tile_sizex) + 1]["crossable"] == 0) then
 				break
 			end
 			love.graphics.rectangle("fill", tmp_posx, tmp_posy, 7, 7)	
@@ -145,6 +159,10 @@ function get_fire(value)
 			end
 		end
 		fire_on_powerups(x, y, value)
+		if (shoot_on_mobs(value, tmp_posx, tmp_posy, 1) == 1) then
+			table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = value.color}) --change sprite
+			break
+		end
 		if (map[y][x]["crossable"] == 0) then
 			map[y][x]["shooted_on"](x, y, value)
 			if (sprite_impact) then

@@ -119,7 +119,7 @@ end
 
 function draw_players(players, walk)
 	local new_r = 0
-	for i, player in pairs(players) do
+	for i, player in pairs(players) do	
 		if (player["alive"] == 1) then
 			if (player["cut_state"] > 50 / 60) then
 	 			new_r = player["r"] + math.pi * 2 * ((player["cut_state"] - 50 / 60) / 0.1)
@@ -130,7 +130,7 @@ function draw_players(players, walk)
  			new_r = new_r % (math.pi * 2)
 			tmp_x, tmp_y = map_to_pixel(player["pos_x"], player["pos_y"])
 			tmp_x, tmp_y = rotate_pos(tmp_x, tmp_y, new_r, walk)		
-				love.graphics.setColor(player["color"][1], player["color"][2], player["color"][3], 255)
+				love.graphics.setColor(player["color"][1], player["color"][2], player["color"][3], 255)						
 			if (math.floor(player["no_hit"] * 10) % 3 ~= 1) then
 				love.graphics.draw(walk[math.floor(player["frame"])], tmp_x, tmp_y, new_r, player["scale_x"], player["scale_y"])
 			end
@@ -142,7 +142,7 @@ end
 function draw_mobs()
 	for i, mob_type in pairs(mobs) do
 		for j, mob in pairs(mob_type) do
-			mob.draw(mob)
+			mob.draw(mob, i, j)
 		end
 	end
 end

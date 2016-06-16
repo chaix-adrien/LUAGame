@@ -208,9 +208,7 @@ function update_mob_only_frame(mob, dt)
 	if (mob.frame > #mob.sprite) then
 		mob.frame = 1
 	end
-	--temp
 	mob.r = mob.r + 0.1
-	--
 end
 
 
@@ -226,13 +224,24 @@ function walk_mob_hit(player, mob)
 end
 
 function draw_mob_basic(mob)
-	print(mob.r)
 	px, py = map_to_pixel(mob.pos.x, mob.pos.y)
 	px, py = rotate_pos(px, py, mob.r, mob.sprite[math.floor(mob.frame)])
 	love.graphics.draw(mob.sprite[math.floor(mob.frame)], px, py, mob.r, mob.scale.x, mob.scale.y)
 end
 
+function kill_mob(player, mob, i, j)
+	-- INDEX
+	print("KILL")
+	table.remove(mobs[i], j)
+end
 
+
+function create_mobs()
+	mobs = {}
+	for i, mob in pairs(mobs_ref) do
+		mobs[mob.type] = {}
+	end
+end
 
 function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, draw_mo, shoot_o, move_o, cut_o, walkab, crossab, size_x, size_y, pos_x, pos_y)
 	local mob = {type = nam,
@@ -256,15 +265,9 @@ function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, dra
 	return (mob)
 end
 
-function create_mobs()
-	mobs = {}
-	for i, mob in pairs(mobs_ref) do
-		mobs[mob.type] = {}
-	end
-end
-
 function load_mobs()
-	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1, move_mob_fix, update_mob_only_frame, draw_mob_basic, shoot_on_nothing, walk_mob_hit, cut_on_nothing, 0, 0, 1, 1, 5, 5)}
+	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1,
+	move_mob_fix, update_mob_only_frame, draw_mob_basic, kill_mob, walk_mob_hit, cut_on_nothing, 0, 0, 1, 1, 5, 5)}
 end
 
 function launch_quick_party()

@@ -1,9 +1,8 @@
 function walked_on_mobs(player)
 	for i, mob_type in pairs(mobs) do
 		for j, mob in pairs(mob_type) do
-			if (player.pos_x > mob.pos.x and player.pos_x < (mob.pos.x + mob.size.x)
-			and player.pos_y > mob.pos.y and player.pos_y < (mob.pos.y + mob.size.y)) then
-				mob.walked_on(player, mob)
+			if (is_on_mob(player.pos_x, player.pos_y, mob) == 1) then
+				mob.walked_on(player, mob, i, j)
 			end
 		end
 	end

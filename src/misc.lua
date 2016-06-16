@@ -51,3 +51,14 @@ function draw_size(img, posx, posy, sizex, sizey, r)
 	end
 	love.graphics.draw(img, posx, posy, rr, scalex, scaley) 
 end
+
+function is_on_mob(x, y, mob)
+	if (x > (mob.pos.x - mob.size.x / 2) + 0.2 * mob.size.x
+			and x < ((mob.pos.x - mob.size.x / 2) + 0.8 * mob.size.x)
+			and y > (mob.pos.y - mob.size.y / 2) + 0.2 * mob.size.y
+			and y < ((mob.pos.y - mob.size.y / 2) + 0.8 * mob.size.y)) then
+		return 1
+	else
+		return 0
+	end
+end
