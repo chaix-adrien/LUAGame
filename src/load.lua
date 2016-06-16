@@ -199,12 +199,34 @@ function load_sounds()
 	item_spawn_sound = load_sound("soundeffect/item_spawn.wav", 1, "stream")
 end
 
+function move_mob_fix(mob, dt)
+	return nil
+end
+
 function update_mob_only_frame(mob, dt)
 	mob.frame = mob.frame + 2 * frame_speed
 	if (mob.frame > #mob.sprite) then
 		mob.frame = 1
 	end
 end
+
+
+function move_mob_rand(mob)
+	mob.pos.x = mob.pos.x + math.random() * 0.1
+	mob.pos.y = mob.pos.y + math.random() * 0.1
+	-- TODO true rand verifier pos until
+end
+
+function walk_mob_hit(player, mob)
+	player.life = player.life - 20
+	player.no_hit = 1
+end
+
+function draw_mob_basic(mob)
+	love.graphics.draw(mob.sprite[math.floor(mob.frame)], ((mob.pos.x - 1) * tile_sizex), ((mob.pos.y - 1) * tile_sizey), 0, mob.scale.x, mob.scale.y)
+end
+
+
 
 function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, draw_mo, shoot_o, move_o, cut_o, walkab, crossab, size_x, size_y, pos_x, pos_y)
 	local mob = {type = nam,
@@ -227,16 +249,6 @@ function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, dra
 	return (mob)
 end
 
-
-function move_mob_rand(mob)
-	mob.pos.x = mob.pos.x + math.random() * 0.1
-	mob.pos.y = mob.pos.y + math.random() * 0.1
-end
-
-function draw_mob_basic(mob)
-	love.graphics.draw(mob.sprite[math.floor(mob.frame)], ((mob.pos.x - 1) * tile_sizex), ((mob.pos.y - 1) * tile_sizey), 0, mob.scale.x, mob.scale.y)
-end
-
 function create_mobs()
 	mobs = {}
 	for i, mob in pairs(mobs_ref) do
@@ -245,7 +257,7 @@ function create_mobs()
 end
 
 function load_mobs()
-	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1, move_mob_rand, update_mob_only_frame, draw_mob_basic, shoot_on_nothing, move_mob_rand, cut_on_nothing, 0, 0, 1, 1, 5, 5)}
+	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1, move_mob_fix, update_mob_only_frame, draw_mob_basic, shoot_on_nothing, walk_mob_hit, cut_on_nothing, 0, 0, 1, 1, 5, 5)}
 end
 
 function launch_quick_party()

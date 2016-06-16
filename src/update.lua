@@ -1,3 +1,14 @@
+function walked_on_mobs(player)
+	for i, mob_type in pairs(mobs) do
+		for j, mob in pairs(mob_type) do
+			local pmob = {x = math.floor(mob.pos.x), y = math.floor(mob.pos.y)}
+			if (player.pos_x > mob.pos.x and player.pos.x < mob.pos.x + mob.size.x and
+				player.pos_y > mob.pos.y and player.pos.y < mob.pos.y + mob.size.y)
+				mob.walked_on(player, mob)
+		end
+	end
+end
+
 function move_player(value, i)
 	local done = 0
 	local x = joysticks[i]:getGamepadAxis("leftx")
@@ -22,6 +33,8 @@ function move_player(value, i)
 		end
 	end
 	map[math.floor(value["pos_y"])][math.floor(value["pos_x"])]["walked_on"] (math.floor(value["pos_x"]), math.floor(value["pos_y"]), value)
+	walked_on_mobs(value)
+	walked_on_powerup(value)
 end
 
 function update_element(element_blocks, dt)
@@ -110,7 +123,7 @@ function update_weapon_player(value, i)
 	end
 end
 
-function update_powerup_player(player)
+function walked_on_poweruo(player)
 	for i, powerup in pairs(powerups) do
 		if (math.floor(player.pos_x) == powerup.x and math.floor(player.pos_y) == powerup.y) then
 			powerup.block.walked_on(powerup.x, powerup.y, player)
@@ -131,7 +144,6 @@ function update_player(value, i, dt)
 	end
 	move_player(value, i)
 	update_weapon_player(value, i)
-	update_powerup_player(value, i)
 	if (i and value["life"] <= 0) then
         value.alive = 0    
 	end
