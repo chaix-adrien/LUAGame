@@ -110,9 +110,9 @@ function  load_blocks()
         fire = load_block("fire", fire_sprite, 1, 1, 1, fire_time, 1, shooted_on_nothing, fire_damage, cut_on_nothing),
         inflamable = load_block("inflamable", {love.graphics.newImage("block/inflamable.png")}, 0, 0, 0, 0, 1, break_box, reset_status, break_box),
         tnt = load_block("tnt", {love.graphics.newImage("block/tnt.png")}, 0, 0, 0, 0, 1, explode, reset_status, explode),
-        waterbomb = load_block("waterbomb", {love.graphics.newImage("block/waterbomb.png")}, 1, 0, 0, 0, 1, waterbomb, waterbomb, waterbomb),
+        waterbomb = load_block("waterbomb", waterbomb_sprite, 1, 0, 1, 0, 1, waterbomb, waterbomb, waterbomb),
         bolt_ball = load_block("bolt_ball", electric_sprite, 1, 1, 1, fire_time, 1, shooted_on_nothing, electric_damage, cut_on_nothing),
-        electric_box = load_block("electric_box", {love.graphics.newImage("block/electric_box.png")}, 0, 0, 0, 0, 1, electric_explode, reset_status, electric_explode),
+        electric_box = load_block("electric_box", electric_box_sprite, 0, 0, 1, 0, 1, electric_explode, reset_status, electric_explode),
 		chest = load_block("chest", {love.graphics.newImage("block/coffre.png")}, 0, 0, 0, 0, 1, shooted_on_nothing, reset_status, open_chest)}
 
 		powerup_life_block = load_powerup("PU_life", "block/life.png", 1, 1, powerup_life)
@@ -133,6 +133,14 @@ function load_animation()
 	electric_sprite = {}
 	for i = 1, 6, 1 do
 		table.insert(electric_sprite, love.graphics.newImage("block/bolt_ball/bolt_ball_000" .. tostring(i) .. ".png"))
+	end
+	electric_box_sprite = {}
+	for i = 1, 10, 1 do
+		table.insert(electric_box_sprite, love.graphics.newImage("block/bolt_sizzle/bolt_sizzle_000" .. tostring(i) .. ".png"))
+	end
+	waterbomb_sprite = {}
+	for i = 1, 8, 1 do
+		table.insert(waterbomb_sprite, love.graphics.newImage("block/waterbomb/" .. tostring(i) .. ".jpg"))
 	end
 end
 
