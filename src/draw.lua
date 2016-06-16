@@ -140,8 +140,8 @@ end
 
 function draw_mobs()
 	for i, mob_type in pairs(mobs) do
-		for i, mob in pairs(mob_type) do
-			mob.draw_mob(mob)
+		for j, mob in pairs(mob_type) do
+			mob.draw(mob)
 		end
 	end
 end

@@ -199,15 +199,23 @@ function load_sounds()
 	item_spawn_sound = load_sound("soundeffect/item_spawn.wav", 1, "stream")
 end
 
-function load_mob(nam, lif, sprit, statu, fram, update_mov, update_mo, draw_mo, shoot_o, move_o, cut_o, walkab, crossab, size_x, size_y, pos_x, pos_y)
+function update_mob_only_frame(mob, dt)
+	mob.frame = mob.frame + 2 * frame_speed
+	if (mob.frame > #mob.sprite) then
+		mob.frame = 1
+	end
+end
+
+function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, draw_mo, shoot_o, move_o, cut_o, walkab, crossab, size_x, size_y, pos_x, pos_y)
 	local mob = {type = nam,
 				life = lif,
 				sprite = sprit,
 				status = statu,
 				frame = fram,
-				update_move = update_mov,
-				update_mob = update_mo,
-				draw_mob = draw_mo,
+				speed = spee,
+				move = update_mov,
+				update = update_mo,
+				draw = draw_mo,
 				shooted_on = shoot_o, 
 				moved_on = move_o,
 				cut_on = cut_o,
@@ -237,7 +245,7 @@ function create_mobs()
 end
 
 function load_mobs()
-	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, move_mob_rand, move_mob_rand, draw_mob_basic, shoot_on_nothing, move_mob_rand, cut_on_nothing, 0, 0, 1, 1, 5, 5)}
+	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1, move_mob_rand, update_mob_only_frame, draw_mob_basic, shoot_on_nothing, move_mob_rand, cut_on_nothing, 0, 0, 1, 1, 5, 5)}
 end
 
 function launch_quick_party()

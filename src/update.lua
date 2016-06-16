@@ -163,10 +163,20 @@ function update_map(dt)
 	end
 end
 
+function update_mobs(dt)
+	for i, mob_type in pairs(mobs) do
+		for j, mob in pairs(mob_type) do
+			mob.update(mob, dt)
+			mob.move(mob, dt)
+		end
+	end
+end
+
 total_time = 0
 function update_game(dt)
 	frame_speed = default_speed / (love.timer.getFPS() / 60)
 	update_map(dt)
+	update_mobs(dt)
 	update_players(dt)
 	total_time = 0
 	update_element(fire_blocks, dt)
