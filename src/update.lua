@@ -142,9 +142,28 @@ function update_players(dt)
 	end
 end
 
+function update_map(dt)
+	for x=1, x_fields, 1 do
+		for y=1, y_fields, 1 do
+			local block = map[y][x]
+			if map[y][x].type == "fire" or map[y][x].type == "bolt_ball" then
+				map[y][x].state = map[y][x].state - dt
+				if (map[y][x].state < 0) then turn_block_to_floor(x, y) end
+			end
+			if (block.animated == 1) then
+				block.frame = block.frame + 2 * frame_speed
+				if (block.frame > #block.sprite) then
+					block.frame = 1
+				end
+			end
+		end
+	end
+end
+
 total_time = 0
 function update_game(dt)
 	frame_speed = default_speed / (love.timer.getFPS() / 60)
+	update_map(dt)
 	update_players(dt)
 	total_time = 0
 	update_element(fire_blocks, dt)

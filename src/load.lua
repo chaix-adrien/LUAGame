@@ -1,29 +1,37 @@
+function copy_table(tb)
+	copy = {}
+	for i, value in pairs(tb) do
+		copy[i] = value
+	end
+	return (copy)
+end
+
 function gen_map(x, y, rate)
 	map = {}
 	for i = 1, y, 1 do
 		local to_add = {}
 		for j = 1, x, 1 do
 			if (love.math.random(rate) == rate - 1) then
-				table.insert(to_add, blocks.wall)
+				table.insert(to_add, copy_table(blocks.wall))
         -- BLOC PIMP
 			elseif (love.math.random(rate / 2) == ((rate / 2) - 1)) then
-				table.insert(to_add, blocks.brick)
+				table.insert(to_add, copy_table(blocks.brick))
 			elseif (love.math.random(rate) == ((rate) - 1)) then
-				table.insert(to_add, blocks.hole)
+				table.insert(to_add, copy_table(blocks.hole))
 			elseif (love.math.random(rate) == ((rate) - 1)) then
-				table.insert(to_add, blocks.mud)
+				table.insert(to_add, copy_table(blocks.mud))
 			elseif (love.math.random(rate) == ((rate) - 1)) then
-				table.insert(to_add, blocks.inflamable)
+				table.insert(to_add, copy_table(blocks.inflamable))
 			elseif (love.math.random(rate * 4) == ((rate))) then
-				table.insert(to_add, blocks.tnt)
+				table.insert(to_add, copy_table(blocks.tnt))
 			elseif (love.math.random(rate * 4) == ((rate))) then
-				table.insert(to_add, blocks.electric_box)
+				table.insert(to_add, copy_table(blocks.electric_box))
 			elseif (love.math.random(rate * 4) == ((rate))) then
-				table.insert(to_add, blocks.waterbomb)
+				table.insert(to_add, copy_table(blocks.waterbomb))
 			elseif (love.math.random(rate * 20) == ((rate))) then
-				table.insert(to_add, blocks.chest)
+				table.insert(to_add, copy_table(blocks.chest))
 			else
-				table.insert(to_add, blocks.floor)
+				table.insert(to_add, copy_table(blocks.floor))
 			end
 		end
 		table.insert(map, to_add)
@@ -50,7 +58,9 @@ end
 function reset_blocks()
 	if (blocks) then
 		for i, block in pairs(blocks) do
-			block["scale_x"], block["scale_y"] = get_sprite_scale(block["sprite"])
+				for j, sprite in pairs(block.sprite) do
+					block["scale_x"], block["scale_y"] = get_sprite_scale(sprite)
+				end
 		end
 	end
 	powerup_life_block.scale_x, powerup_life_block.scale_y = get_sprite_scale(powerup_life_block.sprite)
@@ -60,8 +70,6 @@ function reset_blocks()
 end
 
 function  restart()
-	fire_blocks = {}
-	electric_blocks = {}
 	powerups = {}
 	joysticks = love.joystick.getJoysticks()
 	if (table.getn(joysticks) < 1) then return 1 end
@@ -79,10 +87,9 @@ function  restart()
 	return 0
 end
 
-function load_block(typeof, name, walkability, cross, shoot, walk, cut)
-	local img = love.graphics.newImage(name)
-	sx, sy = get_sprite_scale(img)
-	local block = {type = typeof, sprite = img, scale_x = sx, scale_y = sy, walkable = walkability, shooted_on = shoot, walked_on = walk, cut_on = cut, crossable = cross}
+function load_block(typeof, sprites, walkability, cross, animate, status, frames, shoot, walk, cut)
+	sx, sy = get_sprite_scale(sprites[1])
+	local block = {type = typeof, sprite = sprites, scale_x = sx, scale_y = sy, walkable = walkability, animated = animate, state = status, frame = frames, shooted_on = shoot, walked_on = walk, cut_on = cut, crossable = cross}
 	return (block)
 end
 
@@ -94,19 +101,19 @@ function load_powerup(typeof, name, walkability, cross, walk)
 end
 
 function  load_blocks()
-    blocks = {floor = load_block("floor", "block/floor.png", 1, 1, shooted_on_nothing, reset_status, cut_on_nothing),
-	    brocken_brick = load_block("brocken_brick","block/broken_brick.png", 0, 0, shoot_on_brick, reset_status, shoot_on_brick),
-        brick = load_block("brick","block/brick.png", 0, 0, shoot_on_brick, reset_status, shoot_on_brick),
-        wall = load_block("wall", "block/wall.png", 0, 0, shooted_on_nothing, reset_status, cut_on_nothing),
-        hole = load_block("hole", "block/hole.png", 0, 1, shooted_on_nothing, reset_status, cut_on_nothing),
-        mud = load_block("mud", "block/mud.png", 1, 1, shooted_on_nothing, mud, cut_on_nothing),
-        fire = load_block("fire", "block/fire_ball/fire1.png", 1, 1, shooted_on_nothing, fire_damage, cut_on_nothing),
-        inflamable = load_block("inflamable", "block/inflamable.png", 0, 0, break_box, reset_status, break_box),
-        tnt = load_block("tnt", "block/tnt.png", 0, 0, explode, reset_status, explode),
-        waterbomb = load_block("waterbomb", "block/waterbomb.png", 1, 0, waterbomb, waterbomb, waterbomb),
-        bolt_ball = load_block("bolt_ball", "block/bolt_ball/bolt_ball_0001.png", 1, 1, shooted_on_nothing, electric_damage, cut_on_nothing),
-        electric_box = load_block("electric_box", "block/electric_box.png", 0, 0, electric_explode, reset_status, electric_explode),
-		chest = load_block("chest", "block/coffre.png", 0, 0, shooted_on_nothing, reset_status, open_chest)}
+    blocks = {floor = load_block("floor", {love.graphics.newImage("block/floor.png")}, 1, 1, 0, 0, 1, shoot_on_nothing, reset_status, cut_on_nothing),
+	    brick = load_block("brick", {love.graphics.newImage("block/brick.png"), love.graphics.newImage("block/broken_brick.png")},
+		0, 0, 0, 0, 1, shoot_on_brick, reset_status, shoot_on_brick),
+        wall = load_block("wall", {love.graphics.newImage("block/wall.png")}, 0, 0, 0, 0, 1,shooted_on_nothing, reset_status, cut_on_nothing),
+        hole = load_block("hole", {love.graphics.newImage("block/hole.png")}, 0, 1, 0, 0, 1, shooted_on_nothing, reset_status, cut_on_nothing),
+        mud = load_block("mud", {love.graphics.newImage("block/mud.png")}, 1, 1, 0, 0, 1, shooted_on_nothing, mud, cut_on_nothing),
+        fire = load_block("fire", fire_sprite, 1, 1, 1, fire_time, 1, shooted_on_nothing, fire_damage, cut_on_nothing),
+        inflamable = load_block("inflamable", {love.graphics.newImage("block/inflamable.png")}, 0, 0, 0, 0, 1, break_box, reset_status, break_box),
+        tnt = load_block("tnt", {love.graphics.newImage("block/tnt.png")}, 0, 0, 0, 0, 1, explode, reset_status, explode),
+        waterbomb = load_block("waterbomb", {love.graphics.newImage("block/waterbomb.png")}, 1, 0, 0, 0, 1, waterbomb, waterbomb, waterbomb),
+        bolt_ball = load_block("bolt_ball", electric_sprite, 1, 1, 1, fire_time, 1, shooted_on_nothing, electric_damage, cut_on_nothing),
+        electric_box = load_block("electric_box", {love.graphics.newImage("block/electric_box.png")}, 0, 0, 0, 0, 1, electric_explode, reset_status, electric_explode),
+		chest = load_block("chest", {love.graphics.newImage("block/coffre.png")}, 0, 0, 0, 0, 1, shooted_on_nothing, reset_status, open_chest)}
 
 		powerup_life_block = load_powerup("PU_life", "block/life.png", 1, 1, powerup_life)
 		powerup_shield_block = load_powerup("PU_shield", "block/shield.png", 1, 1, powerup_shield)
@@ -194,8 +201,8 @@ function love.load()
 	math.randomseed(os.time())
 	walk = {love.graphics.newImage("misc/walk_one.png"), love.graphics.newImage("misc/walk_two.png"),
 	love.graphics.newImage("misc/walk_three.png"), love.graphics.newImage("misc/walk_two.png")}
-	load_blocks()
     load_animation()
+	load_blocks()
 	load_impact()
 	load_sounds()
 	load_gui()

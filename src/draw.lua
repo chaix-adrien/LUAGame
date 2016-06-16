@@ -64,25 +64,23 @@ function draw_element(element, sprite, block)
 end
 
 function draw_block(block, pos_x, pos_y)
-	love.graphics.draw(block["sprite"], ((pos_x - 1) * tile_sizex), ((pos_y - 1) * tile_sizey), 0, block["scale_x"], block["scale_y"])
+	love.graphics.draw(block.sprite[math.floor(block.frame)], ((pos_x - 1) * tile_sizex), ((pos_y - 1) * tile_sizey), 0, block["scale_x"], block["scale_y"])
 end
 
 function draw_powerups()
 	for i, powerup in pairs(powerups) do
-		draw_block(powerup.block, powerup.x, powerup.y)
+		love.graphics.draw(powerup.block.sprite, ((powerup.x - 1) * tile_sizex), ((powerup.y - 1) * tile_sizey), 0, powerup.block["scale_x"], powerup.block["scale_y"])
 	end
 end
 
 function draw_map()
 	for i = 1, x_fields, 1 do
 		for j = 1, y_fields, 1 do
-			if (map[j][i].type ~= "fire") then
-				draw_block(map[j][i], i, j)
-			end
+			draw_block(map[j][i], i, j)
 		end
 	end
-	draw_element(fire_blocks, fire_sprite, blocks.fire)
-	draw_element(electric_blocks, electric_sprite, blocks.bolt_ball)
+--	draw_element(fire_blocks, fire_sprite, blocks.fire)
+--	draw_element(electric_blocks, electric_sprite, blocks.bolt_ball)
 	draw_powerups()
 end
 

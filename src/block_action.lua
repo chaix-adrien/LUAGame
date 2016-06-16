@@ -9,10 +9,12 @@ function shooted_on_nothing(x, y, player)
 end
 
 function shoot_on_brick(x, y, player)
-	if (map[y][x].type == "brick") then
-		map[y][x] = blocks.brocken_brick
-	elseif (map[y][x].type == "brocken_brick") then
-		map[y][x] = blocks.floor
+	print("brick", map[y][x].type, map[y][x].state, blocks.brick.state)
+	if (map[y][x].type == "brick" and map[y][x].state == 0) then
+		map[y][x].state = 1
+		map[y][x].frame = 2
+	elseif (map[y][x].type == "brick" and map[y][x].state == 1) then
+		turn_block_to_floor(x, y)
 	end
 	return (1)
 end 
@@ -40,7 +42,7 @@ function explode(x, y, player)
 			end
 		end
 	end
-	map[y][x] = blocks.hole
+	map[y][x] = copy_table(blocks.hole)
 	return (1)
 end
 
@@ -111,7 +113,7 @@ function waterbomb(x, y, player)
 		for j = x - 1, x + 1, 1 do
 			if (((i > 0 and i < y_fields and j > 0 and j < x_fields and map[i][j].type == "floor") and math.random(3) == 2) or (i == y and j == x)) then
 				waterbomb_sound:play()
-				map[i][j] = blocks.mud
+				map[i][j] = copy_table(blocks.mud)
 			end
 		end
 	end
@@ -119,8 +121,7 @@ end
 
 function powerup_life(x, y, player)
 	if (player["life"] ~= 100) then
-		map[y][x] = blocks.floor 
-		powerup_life_sound:play()
+		powerup_life_sound:play() --TODO Laiser owerup si innutile
 	end
 	player["life"] = (player["life"] + 40)
 	if (player["life"] > 100) then
@@ -130,7 +131,6 @@ end
 
 function powerup_shield(x, y, player)
 	if (player["shield_life"] < 3) then
-		map[y][x] = blocks.floor
 		powerup_shield_sound:play()
 		player["shield_life"] = 3
 	end
@@ -172,21 +172,19 @@ end
 
 function turn_block_to_fire(px, py, player)
 	if (map[py][px].type ~= "mud") then
-		map[py][px] = blocks.fire
+		map[py][px] = copy_table(blocks.fire)
 	end
-	table.insert(fire_blocks, {x = px, y = py, state = fire_time})
 	return (1)
 end
 
 function turn_block_to_electric(px, py, player)
 	if (map[py][px].type ~= "mud") then
-		map[py][px] = blocks.bolt_ball
+		map[py][px] = copy_table(blocks.bolt_ball)
 	end
-	table.insert(electric_blocks, {x = px, y = py, state = fire_time})
 	return (1)
 end
 
 function turn_block_to_floor(x, y)
-	map[y][x] = blocks.floor
+	map[y][x] = copy_table(blocks.floor)
 	return (1)
 end
