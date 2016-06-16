@@ -245,7 +245,7 @@ function create_mobs()
 end
 
 function load_mobs()
-	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1, move_mob_rand, update_mob_only_frame, draw_mob_basic, shoot_on_nothing, move_mob_rand, cut_on_nothing, 0, 0, 1, 1, 5, 5)}
+	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1, maze, update_mob_only_frame, draw_mob_basic, shoot_on_nothing, move_mob_rand, cut_on_nothing, 0, 0, 1, 1, 5, 5)}
 end
 
 function launch_quick_party()
