@@ -34,7 +34,7 @@ end
 function update_turret_fix(mob, dt)
 	mob.state.fire_time = mob.state.fire_time + dt
 	if (mob.state.fire_time >= mob.state.fire_frequency) then
-		fire(mob.pos, mob.r)
+		fire(mob.pos, mob.r, 10)
 		mob.state.fire_time = 0
 	end
 end
@@ -42,7 +42,7 @@ end
 function update_turret_rot(mob, dt)
 	mob.state.fire_time = mob.state.fire_time + dt
 	if (mob.state.fire_time >= mob.state.fire_frequency) then
-		fire(mob.pos, mob.r)
+		shoot(mob.pos, mob.r, 10)
 		mob.state.fire_time = 0
 	end
 	if (mob.state.fire_time < mob.state.fire_frequency - 0.8) then
@@ -56,7 +56,7 @@ end
 function update_turret_target(mob, dt)
 	mob.state.fire_time = mob.state.fire_time + dt
 	if (mob.state.fire_time >= mob.state.fire_frequency) then
-		fire(mob.pos, mob.r)
+		shoot(mob.pos, mob.r, 10)
 		mob.state.fire_time = 0
 	end
 	if (mob.target ~= nil and mob.state.fire_time < mob.state.fire_frequency - 0.8) then

@@ -58,9 +58,8 @@ function draw_element(element, sprite, block)
 		for i, elem in pairs(element) do
 			love.graphics.draw(sprite[math.floor(element[i]["state"] * 10) % #sprite + 1], ((element[i]["x"] - 1) * tile_sizex),
 				((element[i]["y"] - 1) * tile_sizey), 0,
-				block["scale_x"],
-				block["scale_y"])
-				-- TODO stockage element mieu (stocker les sprite dans le block)
+			block["scale_x"],
+			block["scale_y"])
 		end	
 	end
 end

@@ -42,11 +42,11 @@ function shoot_on_mobs(player, px, py, call_func)
 				if (call_func == 1) then
 					mob.shooted_on(player, mob, i, j)
 				end			
-				return (1)
+				return mob
 			end
 		end
 	end
-	return (0)
+	return nil
 end
 
 function draw_fire(player)
@@ -68,7 +68,7 @@ function draw_fire(player)
 					break
 				end
 			end
-			if (shoot_on_mobs(player, tmp_posx, tmp_posy, 0) == 1) then -- TODO prendre crossable en compte
+			if (shoot_on_mobs(player, tmp_posx, tmp_posy, 0) == 1) then
 				hit = 1
 			end
 			if (hit == 1 or map[math.floor(tmp_posy)][math.floor(tmp_posx)]["crossable"] == 0) then
@@ -136,13 +136,13 @@ end
 function fire_on_powerups(x, y)
 	for i, pu in pairs(powerups) do
 		if (x == pu.x and y == pu.y) then
-			-- TODO sound break powerup
+			-- TODO sound break powerup / sound brick cassé
 			table.remove(powerups, i)
 		end
 	end
 end
 
-function fire(pos, r, player) -- TODO param damage if touch, gerer les pdv enelvé aux joueurs ici
+function fire(pos, r, damage, player) -- TODO param damage if touch, gerer les pdv enelvé aux joueurs ici
 	local tmp_posx = pos.x
 	local tmp_posy = pos.y
 	vec_x, vec_y = get_view_vector(r, 10)
@@ -160,12 +160,12 @@ function fire(pos, r, player) -- TODO param damage if touch, gerer les pdv enelv
 						shield_break_sound:play()
 					end
 					table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact})
-					return target, 1					
+					return nil					
 				elseif (target.no_hit <= 0) then
 					if (player) then
 						color = player.color
 					else
-						color = {0, 0, 0, 255}
+						color = {255, 255, 255, 255}
 					end
 					table.insert(impact, {pos_x = target.pos_x, pos_y = target.pos_y, frame = 15, sprite = sprite_skull, color = color})
 				end
@@ -173,18 +173,21 @@ function fire(pos, r, player) -- TODO param damage if touch, gerer les pdv enelv
 			end
 		end
 		fire_on_powerups(x, y)
-		if (player and shoot_on_mobs(player, tmp_posx, tmp_posy, 1) == 1) then
-			table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = player.color}) --change sprite
-			break -- TODO check crossable (shoot on mob return mob/nil, fonction shoot ici)
+		if (player) then
+			local mob = shoot_on_mobs(player, tmp_posx, tmp_posy, 1)
+			if (mob) then
+				table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = player.color}) --change sprite
+				return mob
+			end
 		end
 		if (map[y][x]["crossable"] == 0) then
 			map[y][x]["shooted_on"](x, y, player)
 			if (player) then
-				color = player.color
+				colors = player.color
 			else
-				color = {0, 0, 0, 255}
+				colors = {255, 255, 255, 255}
 			end
-			table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = color})
+			table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = colors})
 			break
 		end
 		tmp_posx = tmp_posx + vec_x
@@ -192,4 +195,23 @@ function fire(pos, r, player) -- TODO param damage if touch, gerer les pdv enelv
 	until (tmp_posx < 1 or tmp_posx > x_fields + 1 or
 	tmp_posy < 1 or tmp_posy > y_fields + 1)
 	return nil, 0
+end
+
+function shoot(pos, r, damage, player) -- TODO : passer sound en param
+	target = fire(pos, r, damage, player)
+    if (player) then
+		player.ammo = player.ammo - 1
+		player["shoot"] = 1
+	end
+	if (target and not (target.no_hit and target.no_hit > 0)) then
+		laser2:play()
+		if (target.life) then
+			target.life = target.life - damage
+		end
+		if (target.no_hit) then
+			target["no_hit"] = 2
+		end
+	else
+		laser:play()
+	end
 end

@@ -79,26 +79,12 @@ function update_item(dt)
 	end
 end
 
-function shoot(player)
-	local have_shield = 0
-    target, have_shield = fire({x = player.pos_x, y = player.pos_y}, player.r, player)
-    player["ammo"] = player["ammo"] - 1
-	if (target and have_shield == 0 and target["no_hit"] <= 0) then
-		laser2:play()
-		target["life"] = target["life"] - 20
-		target["no_hit"] = 2
-	else
-		laser:play()
-	end
-	player["shoot"] = 1
-end
-
 function update_weapon_player(value, i)
 	if (math.abs(joysticks[i]:getGamepadAxis("righty")) > 0.4 or math.abs(joysticks[i]:getGamepadAxis("rightx")) > 0.4) then
 		value.r = vec_to_r(joysticks[i]:getGamepadAxis("rightx"), joysticks[i]:getGamepadAxis("righty"))
 	end
 	if (value["ammo"] > 0  and value["shield"] == 0 and joysticks[i]:getGamepadAxis("triggerright") > 0.8 and value["shoot"] == 0 and value["cooldown"] <= 0) then
-           shoot(value)
+           shoot({x = value.pos_x, y = value.pos_y}, value.r, 20, value)
 	elseif (joysticks[i]:getGamepadAxis("triggerright") < 0.8 and value["shoot"] == 1) then
 		value["shoot"] = 0
 	end
@@ -125,8 +111,9 @@ end
 function walked_on_powerup(player)
 	for i, powerup in pairs(powerups) do
 		if (math.floor(player.pos_x) == powerup.x and math.floor(player.pos_y) == powerup.y) then
-			powerup.block.walked_on(powerup.x, powerup.y, player)
-			table.remove(powerups, i)
+			if (powerup.block.walked_on(powerup.x, powerup.y, player) == 1) then
+				table.remove(powerups, i)
+			end
 		end
 	end
 end

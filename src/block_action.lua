@@ -119,28 +119,34 @@ function waterbomb(x, y, player)
 end
 
 function powerup_life(x, y, player)
-	if (player["life"] ~= 100) then
-		powerup_life_sound:play() --TODO Laiser owerup si innutile
+	if (player["life"] >= 100) then
+		return (0)
 	end
+	powerup_life_sound:play()
 	player["life"] = (player["life"] + 40)
 	if (player["life"] > 100) then
 		player["life"] = 100
 	end
+	return 1
 end
 
 function powerup_shield(x, y, player)
 	if (player["shield_life"] < 3) then
 		powerup_shield_sound:play()
 		player["shield_life"] = 3
+		return 1
 	end
+	return 0
 end
 
 function powerup_invincible(x, y, player)
 	player["no_hit"] = 2
+	return 1
 end
 
 function powerup_ammo(x, y, player)
 	player["ammo"] = 10
+	return 1
 end
 
 --
