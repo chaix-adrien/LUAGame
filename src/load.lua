@@ -69,11 +69,13 @@ function reset_blocks()
 	powerup_shield_block.scale_x, powerup_shield_block.scale_y = get_sprite_scale(powerup_shield_block.sprite)
 end
 
-function spawn_mob(type, px, py, rot)
+function spawn_mob(type, px, py, state, rot, target)
 	table.insert(mobs[type], copy_table(mobs_ref[type]))
 	mobs[type][#(mobs[type])].pos.x = px
 	mobs[type][#(mobs[type])].pos.y = py
 	mobs[type][#(mobs[type])].r = rot
+	mobs[type][#(mobs[type])].target = target
+	mobs[type][#(mobs[type])].state = state
 end
 
 function  restart()
@@ -92,7 +94,9 @@ function  restart()
 	item_spawn = item_spawn_rate
 	set_volumes()
 	create_mobs()
-	spawn_mob("turret_fixed", 3, 3, math.pi * 0.75)
+	spawn_mob("turret_fixed", 3, 3, {fire_time = 0, fire_frequency = 2}, math.pi * 0.75)
+	spawn_mob("turret_target", 7, 7, {fire_time = 0, fire_frequency = 2}, 0, players[1])
+	spawn_mob("turret_rot", 10, 7, {fire_time = 0, fire_frequency = 2, min_rot = 0, max_rot = math.pi / 2, side = 1}, 0)
 	return 0
 end
 
@@ -217,7 +221,7 @@ function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, dra
 	local mob = {type = nam,
 				life = lif,
 				sprite = sprit,
-				status = statu,
+				state = statu,
 				frame = fram,
 				speed = spee,
 				move = update_mov,
@@ -228,6 +232,7 @@ function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, dra
 				cuted_on = cut_o,
 				crossable = crossab,
 				r = rot,
+				target = nil,
 				size = {x = size_x, y = size_y},
 				pos = {x = pos_x, y = pos_y},
 				scale = {x = (tile_sizex / sprit[1]:getWidth() * size_x), y = (tile_sizey / sprit[1]:getHeight() * size_y)}}
@@ -238,7 +243,11 @@ function load_mobs()
 	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1,
 	nil_func, update_mob_only_frame, draw_mob_basic, kill_mob, walk_mob_hit, kill_mob, 0, 1, 1, 5, 5, 0),
 	turret_fixed = load_mob("turret_fixed", 100, walk, 0, 1, 0,
-	nil_func, update_turret, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0)}
+	nil_func, update_turret_fix, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
+	turret_target = load_mob("turret_target", 100, walk, 0, 1, 0,
+	nil_func, update_turret_target, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
+	turret_rot = load_mob("turret_rot", 100, walk, 0, 1, 0,
+	nil_func, update_turret_rot, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0)}
 end
 
 function launch_quick_party()

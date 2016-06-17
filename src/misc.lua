@@ -62,3 +62,8 @@ function is_on_mob(x, y, mob)
 		return 0
 	end
 end
+
+function vec_to_r(x, y)
+	local r = math.atan2(y, x) + math.pi / 2
+	return r
+end

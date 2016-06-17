@@ -95,7 +95,7 @@ end
 
 function update_weapon_player(value, i)
 	if (math.abs(joysticks[i]:getGamepadAxis("righty")) > 0.4 or math.abs(joysticks[i]:getGamepadAxis("rightx")) > 0.4) then
-		value["r"] = math.atan2(joysticks[i]:getGamepadAxis("righty"), joysticks[i]:getGamepadAxis("rightx")) + math.pi / 2
+		value.r = vec_to_r(joysticks[i]:getGamepadAxis("rightx"), joysticks[i]:getGamepadAxis("righty"))
 	end
 	if (value["ammo"] > 0  and value["shield"] == 0 and joysticks[i]:getGamepadAxis("triggerright") > 0.8 and value["shoot"] == 0 and value["cooldown"] <= 0) then
            shoot(value)
@@ -174,9 +174,18 @@ function update_map(dt)
 	end
 end
 
+function update_mob_target(mob)
+	if (mob.target) then
+		if (mob.target.alive == 0) then
+			mob.target = players[math.random(#players)]
+		end
+	end
+end
+
 function update_mobs(dt)
 	for i, mob_type in pairs(mobs) do
 		for j, mob in pairs(mob_type) do
+			update_mob_target(mob)
 			mob.update(mob, dt)
 			mob.move(mob, dt)
 		end
@@ -202,6 +211,11 @@ function update_game(dt)
 	update_item(dt)
 	if (love.keyboard.isDown("space")) then
 		restart()
+	end
+	if (love.keyboard.isDown('k')) then
+		players[1].alive = 0
+		table.remove(players, 1)
+		for i=0, 1000000000, 1 do tmp = i / 4 end
 	end
 	if (love.keyboard.isDown("escape")) then
 		if (launch_on_menu == 1) then

@@ -31,6 +31,36 @@ function kill_mob(player, mob, i, j)
 	table.remove(mobs[i], j)
 end
 
-function update_turret(mob, dt)
-	
+function update_turret_fix(mob, dt)
+	mob.state.fire_time = mob.state.fire_time + dt
+	if (mob.state.fire_time >= mob.state.fire_frequency) then
+		fire(mob.pos, mob.r)
+		mob.state.fire_time = 0
+	end
+end
+
+function update_turret_rot(mob, dt)
+	mob.state.fire_time = mob.state.fire_time + dt
+	if (mob.state.fire_time >= mob.state.fire_frequency) then
+		fire(mob.pos, mob.r)
+		mob.state.fire_time = 0
+	end
+	if (mob.state.fire_time < mob.state.fire_frequency - 0.8) then
+		mob.r = mob.r + dt * mob.state.side 	
+	end
+	if (mob.r > mob.state.max_rot or mob.r < mob.state.min_rot) then
+		mob.state.side = mob.state.side * -1
+	end
+end
+
+function update_turret_target(mob, dt)
+	mob.state.fire_time = mob.state.fire_time + dt
+	if (mob.state.fire_time >= mob.state.fire_frequency) then
+		fire(mob.pos, mob.r)
+		mob.state.fire_time = 0
+	end
+	if (mob.target ~= nil and mob.state.fire_time < mob.state.fire_frequency - 0.8) then
+		local r = vec_to_r(mob.target.pos_x - mob.pos.x, mob.target.pos_y - mob.pos.y)
+		mob.r = mob.r + ((r - mob.r) / 10)
+	end
 end

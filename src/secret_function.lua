@@ -142,11 +142,10 @@ function fire_on_powerups(x, y)
 	end
 end
 
-function fire(pos, r, player)
+function fire(pos, r, player) -- TODO param damage if touch, gerer les pdv enelvé aux joueurs ici
 	local tmp_posx = pos.x
 	local tmp_posy = pos.y
 	vec_x, vec_y = get_view_vector(r, 10)
-	print(vec_x, vec_y)
 	repeat
 		x = math.floor(tmp_posx)
 		y = math.floor(tmp_posy)
@@ -163,7 +162,12 @@ function fire(pos, r, player)
 					table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact})
 					return target, 1					
 				elseif (target.no_hit <= 0) then
-					table.insert(impact, {pos_x = target.pos_x, pos_y = target.pos_y, frame = 15, sprite = sprite_skull, color = player.color})
+					if (player) then
+						color = player.color
+					else
+						color = {0, 0, 0, 255}
+					end
+					table.insert(impact, {pos_x = target.pos_x, pos_y = target.pos_y, frame = 15, sprite = sprite_skull, color = color})
 				end
 				return target, 0
 			end
@@ -175,7 +179,12 @@ function fire(pos, r, player)
 		end
 		if (map[y][x]["crossable"] == 0) then
 			map[y][x]["shooted_on"](x, y, player)
-			table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = player.color})
+			if (player) then
+				color = player.color
+			else
+				color = {0, 0, 0, 255}
+			end
+			table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = color})
 			break
 		end
 		tmp_posx = tmp_posx + vec_x
