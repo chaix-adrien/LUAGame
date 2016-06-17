@@ -81,7 +81,7 @@ end
 
 function shoot(player)
 	local have_shield = 0
-    target, have_shield = get_fire(player)
+    target, have_shield = fire({x = player.pos_x, y = player.pos_y}, player.r, player)
     player["ammo"] = player["ammo"] - 1
 	if (target and have_shield == 0 and target["no_hit"] <= 0) then
 		laser2:play()

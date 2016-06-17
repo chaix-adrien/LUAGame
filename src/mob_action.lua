@@ -1,4 +1,4 @@
-function move_mob_fix(mob, dt)
+function nil_func()
 	return nil
 end
 
@@ -29,4 +29,8 @@ end
 
 function kill_mob(player, mob, i, j)
 	table.remove(mobs[i], j)
+end
+
+function update_turret(mob, dt)
+	
 end

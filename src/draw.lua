@@ -5,7 +5,8 @@ function draw_impact(impact, sprite_impact)
 		else
 			love.graphics.setColor(255, 255, 255, 255)
 		end
-		love.graphics.draw(impact[i]["sprite"], impact[i]["pos_x"] - impact[i]["sprite"]:getWidth() / 2, impact[i]["pos_y"] - impact[i]["sprite"]:getHeight() / 2)
+		x, y = map_to_pixel(impact[i].pos_x, impact[i].pos_y)
+		love.graphics.draw(impact[i]["sprite"], x - impact[i]["sprite"]:getWidth() / 2, y - impact[i]["sprite"]:getHeight() / 2)
 		impact[i]["frame"] = impact[i]["frame"] - 1
 		if (impact[i]["frame"] <= 0) then
 			table.remove(impact, i)
@@ -25,7 +26,7 @@ function draw_victory()
 			love.graphics.setColor(alive_players[1]["color"][1], alive_players[1]["color"][2], alive_players[1]["color"][3], 255)
 			love.graphics.draw(win_screen, screen_w / 2 - win_screen:getWidth() / 2, screen_h / 2 - win_screen:getHeight() / 2, 0, 1, 1)
 			love.graphics.setColor(255, 255, 255, 255)
-			table.insert(impact, {pos_x = math.random(screen_w), pos_y = math.random(screen_h), frame = 15, sprite = fireworks[math.random(4)]})
+			table.insert(impact, {pos_x = math.random(x_fields), pos_y = math.random(y_fields), frame = 15, sprite = fireworks[math.random(4)]})
 	 	end
 	end
 end

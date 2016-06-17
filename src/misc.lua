@@ -7,9 +7,9 @@ function get_sprite_scale(sprite)
 	return x, y
 end
 
-function get_view_vector(value)
-	local vec_x = (math.cos(-(value["r"] - math.pi * 3 / 4)) * tile_sizex + math.sin(-(value["r"] - math.pi * 3 / 4)) * tile_sizey) / 10
-	local vec_y = (math.cos(-(value["r"] - math.pi * 3 / 4)) * tile_sizey - math.sin(-(value["r"] - math.pi * 3 / 4)) * tile_sizex) / 10
+function get_view_vector(r, divide)
+	local vec_x = (math.cos(-(r - math.pi * 3 / 4)) + math.sin(-(r - math.pi * 3 / 4))) / divide
+	local vec_y = (math.cos(-(r - math.pi * 3 / 4)) - math.sin(-(r - math.pi * 3 / 4))) / divide
 	return vec_x, vec_y
 end
 

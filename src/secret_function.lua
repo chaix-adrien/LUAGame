@@ -36,8 +36,6 @@ function set_laser_color(value)
 end
 
 function shoot_on_mobs(player, px, py, call_func)
-	px = (px / tile_sizex) + 1
-	py = (py / tile_sizey) + 1
 	for i, mob_type in pairs(mobs) do
 		for j, mob in pairs(mob_type) do
 			if (is_on_mob(px, py, mob) == 1) then
@@ -56,8 +54,9 @@ function draw_fire(player)
 		draw_shield(player)
 	end
 	if (player["ammo"] > 0 and player["cooldown"] <= 0 and not (player["shield"] and player["shield"] ~= 0)) then
-		tmp_posx, tmp_posy = map_to_pixel(player["pos_x"], player["pos_y"])
-		vec_x, vec_y = get_view_vector(player)
+		tmp_posx = player.pos_x
+		tmp_posy = player.pos_y
+		vec_x, vec_y = get_view_vector(player.r, 10)
 		set_laser_color(player)
 		local hit = 0
 		repeat
@@ -69,17 +68,18 @@ function draw_fire(player)
 					break
 				end
 			end
-			if (shoot_on_mobs(player, tmp_posx, tmp_posy, 0) == 1) then
+			if (shoot_on_mobs(player, tmp_posx, tmp_posy, 0) == 1) then -- TODO prendre crossable en compte
 				hit = 1
 			end
-			if (hit == 1 or map[math.floor(tmp_posy /tile_sizey) + 1][math.floor(tmp_posx / tile_sizex) + 1]["crossable"] == 0) then
+			if (hit == 1 or map[math.floor(tmp_posy)][math.floor(tmp_posx)]["crossable"] == 0) then
 				break
 			end
-			love.graphics.rectangle("fill", tmp_posx, tmp_posy, 7, 7)	
+			pix, piy = map_to_pixel(tmp_posx, tmp_posy)			
+			love.graphics.rectangle("fill", pix, piy, 7, 7)	
 			tmp_posx = tmp_posx + vec_x
 			tmp_posy = tmp_posy + vec_y
-		until (tmp_posx < 0 or tmp_posx >= screen_w or
-		tmp_posy < 0 or tmp_posy >= screen_h)
+		until (tmp_posx < 1 or tmp_posx > x_fields + 1 or
+		tmp_posy < 1 or tmp_posy > y_fields + 1)
 		love.graphics.setColor(255, 255, 255, 255)
 	end
 end
@@ -124,7 +124,7 @@ end
 function check_shield(player, vec_x, vec_y)
 	local player_x = 0
 	local player_y  = 0
-	player_x, player_y = get_view_vector(player)
+	player_x, player_y = get_view_vector(player.r, 1)
 	angle = math.atan2(-vec_y, -vec_x) - math.atan2(player_y, player_x)
 	if (player["shield"] and player["shield"] == 1 and math.abs(angle) <= shield_size) then
 		return 1
@@ -133,7 +133,7 @@ function check_shield(player, vec_x, vec_y)
 	end
 end
 
-function fire_on_powerups(x, y, player)
+function fire_on_powerups(x, y)
 	for i, pu in pairs(powerups) do
 		if (x == pu.x and y == pu.y) then
 			-- TODO sound break powerup
@@ -142,50 +142,45 @@ function fire_on_powerups(x, y, player)
 	end
 end
 
-function get_fire(value)
-	local tmp_posx = (value["pos_x"] - 1) * tile_sizex
-	local tmp_posy = (value["pos_y"] - 1) * tile_sizey
-	vec_x, vec_y = get_view_vector(value)
+function fire(pos, r, player)
+	local tmp_posx = pos.x
+	local tmp_posy = pos.y
+	vec_x, vec_y = get_view_vector(r, 10)
+	print(vec_x, vec_y)
 	repeat
-		x = math.floor(tmp_posx / tile_sizex) + 1
-		y = math.floor(tmp_posy / tile_sizey) + 1
-		for i, player in pairs(players) do
-			if ((value["name"] ~= player["name"]) and math.pow(tmp_posx - (player["pos_x"] - 1) * tile_sizex, 2)
-				+ math.pow(tmp_posy - (player["pos_y"] - 1) * tile_sizey, 2) < math.pow(tile_sizey / 2, 2)) then
-				if (player["shield"] and check_shield(player, vec_x, vec_y) == 1) then
-					player["shield_life"] = player["shield_life"] - 1
-					if (player["shield_life"] > 0) then
+		x = math.floor(tmp_posx)
+		y = math.floor(tmp_posy)
+		for i, target in pairs(players) do
+			if (not (player and player.name == target.name) and math.pow(tmp_posx - target.pos_x, 2)
+				+ math.pow(tmp_posy - target.pos_y, 2) < math.pow(0.5, 2)) then
+				if (target.shield and check_shield(target, vec_x, vec_y) == 1) then
+					target.shield_life = target.shield_life - 1
+					if (target.shield_life > 0) then
 						shield_sound:play()
 					else
 						shield_break_sound:play()
 					end
-					if (sprite_impact) then
-						table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact})
-					end
-					return player, 1					
-				elseif (player["no_hit"] <= 0 and sprite_skull) then
-					table.insert(impact, {pos_x = (player["pos_x"] - 1) * tile_sizex, pos_y = (player["pos_y"] - 1) * tile_sizey, frame = 15, sprite = sprite_skull, color = player.color})
+					table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact})
+					return target, 1					
+				elseif (target.no_hit <= 0) then
+					table.insert(impact, {pos_x = target.pos_x, pos_y = target.pos_y, frame = 15, sprite = sprite_skull, color = player.color})
 				end
-				return player, 0
+				return target, 0
 			end
 		end
-		fire_on_powerups(x, y, value)
-		if (shoot_on_mobs(value, tmp_posx, tmp_posy, 1) == 1) then
-			table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = value.color}) --change sprite
-			break
+		fire_on_powerups(x, y)
+		if (player and shoot_on_mobs(player, tmp_posx, tmp_posy, 1) == 1) then
+			table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = player.color}) --change sprite
+			break -- TODO check crossable (shoot on mob return mob/nil, fonction shoot ici)
 		end
 		if (map[y][x]["crossable"] == 0) then
-			map[y][x]["shooted_on"](x, y, value)
-			if (sprite_impact) then
-				table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = value.color})
-			end
+			map[y][x]["shooted_on"](x, y, player)
+			table.insert(impact, {pos_x = tmp_posx, pos_y = tmp_posy, frame = 15, sprite = sprite_impact, color = player.color})
 			break
 		end
-		repeat
-			tmp_posx = tmp_posx + vec_x
-			tmp_posy = tmp_posy + vec_y
-		until (math.floor(tmp_posx * tile_sizex) + 1 ~= x or math.floor(tmp_posy * tile_sizey) + 1 ~= y)
-	until (tmp_posx < 0 or tmp_posx > screen_w or
-	tmp_posy < 0 or tmp_posy > screen_h)
+		tmp_posx = tmp_posx + vec_x
+		tmp_posy = tmp_posy + vec_y
+	until (tmp_posx < 1 or tmp_posx > x_fields + 1 or
+	tmp_posy < 1 or tmp_posy > y_fields + 1)
 	return nil, 0
 end
