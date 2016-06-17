@@ -1,2 +1,2 @@
 @echo off
-start love.exe src/lol
+start love.exe src/
