@@ -7,6 +7,12 @@ function get_sprite_scale(sprite)
 	return x, y
 end
 
+function get_mob_scale(mob)
+	local scale_x = (tile_sizex / mob.sprite[1]:getWidth()) * mob.size.x
+	local scale_y = (tile_sizey / mob.sprite[1]:getHeight()) * mob.size.y
+	return scale_x, scale_y
+end
+
 function get_view_vector(r, divide)
 	local vec_x = (math.cos(-(r - math.pi * 3 / 4)) + math.sin(-(r - math.pi * 3 / 4))) / divide
 	local vec_y = (math.cos(-(r - math.pi * 3 / 4)) - math.sin(-(r - math.pi * 3 / 4))) / divide

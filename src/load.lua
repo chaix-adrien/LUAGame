@@ -55,12 +55,17 @@ function load_player_joystick()
 	end
 end
 
-function reset_blocks()
+function reset_blocks_mobs()
 	if (blocks) then
 		for i, block in pairs(blocks) do
 				for j, sprite in pairs(block.sprite) do
 					block["scale_x"], block["scale_y"] = get_sprite_scale(sprite)
 				end
+		end
+	end
+	if (mobs_ref) then
+		for i, mob in pairs(mobs_ref) do
+			mob.scale.x, mob.scale.y = get_mob_scale(mob)
 		end
 	end
 	powerup_life_block.scale_x, powerup_life_block.scale_y = get_sprite_scale(powerup_life_block.sprite)
@@ -69,34 +74,35 @@ function reset_blocks()
 	powerup_shield_block.scale_x, powerup_shield_block.scale_y = get_sprite_scale(powerup_shield_block.sprite)
 end
 
-function spawn_mob(type, px, py, state, rot, target)
+function spawn_mob(type, px, py, state, rot, target, color)
 	table.insert(mobs[type], copy_table(mobs_ref[type]))
 	mobs[type][#(mobs[type])].pos.x = px
 	mobs[type][#(mobs[type])].pos.y = py
 	mobs[type][#(mobs[type])].r = rot
 	mobs[type][#(mobs[type])].target = target
 	mobs[type][#(mobs[type])].state = state
+	mobs[type][#(mobs[type])].color = color	
 end
 
 function  restart()
 	powerups = {}
 	joysticks = love.joystick.getJoysticks()
 	if (table.getn(joysticks) < 1) then return 1 end
-	x_fields = 16
-	y_fields = 9
-	tile_sizex = screen_w / x_fields
-	tile_sizey = screen_h / y_fields
-	reset_blocks()	
+	print(tile_sizex, tile_sizey)
+	tile_sizex = screen_w / view.w
+	tile_sizey = screen_h / view.h
+	reset_blocks_mobs()
 	load_player_joystick()
+	print(tile_sizex, tile_sizey,players[1].scale_x, players[1].scale_y)
 	map = gen_map(x_fields, y_fields, 10)
 	spawn_players(players, map, x_fields, y_fields)
 	game_victory = 0
 	item_spawn = item_spawn_rate
 	set_volumes()
 	create_mobs()
-	spawn_mob("turret_fixed", 3, 3, {fire_time = 0, fire_frequency = 2}, math.pi * 0.75)
-	spawn_mob("turret_target", 7, 7, {fire_time = 0, fire_frequency = 2}, 0, players[1])
-	spawn_mob("turret_rot", 10, 7, {fire_time = 0, fire_frequency = 2, min_rot = 0, max_rot = math.pi / 2, side = 1}, 0)
+	--spawn_mob("turret_fixed", 3.5, 3.5, {fire_time = 0, fire_frequency = 2}, math.pi * 0.75)
+	--spawn_mob("turret_target", 7.5, 7.5, {fire_time = 0, fire_frequency = 2}, 0, players[1], {255, 100, 100, 255})
+	--spawn_mob("turret_rot", 10.5, 7.5, {fire_time = 0, fire_frequency = 2, min_rot = 0, max_rot = math.pi / 2, side = 1}, 0, nil, {100, 100, 255, 255})
 	return 0
 end
 
@@ -235,18 +241,20 @@ function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, dra
 				target = nil,
 				size = {x = size_x, y = size_y},
 				pos = {x = pos_x, y = pos_y},
+				color = nil,
 				scale = {x = (tile_sizex / sprit[1]:getWidth() * size_x), y = (tile_sizey / sprit[1]:getHeight() * size_y)}}
 	return (mob)
 end
 
 function load_mobs()
+	turret_sprite = love.graphics.newImage("mob/turret.png")
 	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1,
 	nil_func, update_mob_only_frame, draw_mob_basic, kill_mob, walk_mob_hit, kill_mob, 0, 1, 1, 5, 5, 0),
-	turret_fixed = load_mob("turret_fixed", 100, walk, 0, 1, 0,
+	turret_fixed = load_mob("turret_fixed", 100, {turret_sprite}, 0, 1, 0,
 	nil_func, update_turret_fix, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
-	turret_target = load_mob("turret_target", 100, walk, 0, 1, 0,
+	turret_target = load_mob("turret_target", 100, {turret_sprite}, 0, 1, 0,
 	nil_func, update_turret_target, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
-	turret_rot = load_mob("turret_rot", 100, walk, 0, 1, 0,
+	turret_rot = load_mob("turret_rot", 100, {turret_sprite}, 0, 1, 0,
 	nil_func, update_turret_rot, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0)}
 end
 

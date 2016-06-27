@@ -7,8 +7,8 @@ function create_player(player_name, img)
 		aim_x = 0,  aim_y = 0,
 		r = 1,
 		shield = 0, shield_life = 3,
-		scale_x = (screen_w / img:getWidth() / x_fields),
-		scale_y = (screen_h / img:getHeight() / y_fields),
+		scale_x = tile_sizex / walk[1]:getWidth(),
+		scale_y = tile_sizey / walk[1]:getHeight(),
 		speed = frame_speed,
 		life = 100,
 		shoot = 0,
@@ -34,8 +34,8 @@ function reset_player(player)
 	player["cooldown"] = 0
 	player["no_hit"] = 128 / 60
 	player["cut_state"] = 0
-	player["scale_x"] = (screen_w / walk[1]:getWidth() / x_fields)
-	player["scale_y"] = (screen_h / walk[1]:getHeight() / y_fields)
+	player["scale_x"] = tile_sizex / walk[1]:getWidth()
+	player["scale_y"] = tile_sizey / walk[1]:getHeight()
 end
 
 function spawn_players(players, map, x_lim, y_lim)

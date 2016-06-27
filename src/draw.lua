@@ -5,7 +5,7 @@ function draw_impact(impact, sprite_impact)
 		else
 			love.graphics.setColor(255, 255, 255, 255)
 		end
-		x, y = map_to_pixel(impact[i].pos_x, impact[i].pos_y)
+		x, y = map_to_pix(impact[i].pos_x, impact[i].pos_y)
 		love.graphics.draw(impact[i]["sprite"], x - impact[i]["sprite"]:getWidth() / 2, y - impact[i]["sprite"]:getHeight() / 2)
 		impact[i]["frame"] = impact[i]["frame"] - 1
 		if (impact[i]["frame"] <= 0) then
@@ -31,39 +31,6 @@ function draw_victory()
 	end
 end
 
-function draw_flames()
-	if (fire_blocks) then
-		for i, block in pairs(fire_blocks) do
-			love.graphics.draw(fire_sprite[math.floor(fire_blocks[i]["state"] / 7) % 6 + 1], ((fire_blocks[i]["x"] - 1) * tile_sizex),
-			((fire_blocks[i]["y"] - 1) * tile_sizey), 0,
-			blocks.fire["scale_x"],
-			blocks.fire["scale_y"])
-		end	
-	end
-end		
-
-function draw_electricity()
-	if (electric_blocks) then
-		for i, block in pairs(electric_blocks) do
-			love.graphics.draw(electric_sprite[math.floor(electric_blocks[i]["state"] / 7) % 6 + 1], ((electric_blocks[i]["x"] - 1) * tile_sizex),
-				((electric_blocks[i]["y"] - 1) * tile_sizey), 0,
-				blocks.bolt_ball["scale_x"],
-				blocks.bolt_ball["scale_y"])
-		end	
-	end
-end		
-
-function draw_element(element, sprite, block)
-	if (element) then
-		for i, elem in pairs(element) do
-			love.graphics.draw(sprite[math.floor(element[i]["state"] * 10) % #sprite + 1], ((element[i]["x"] - 1) * tile_sizex),
-				((element[i]["y"] - 1) * tile_sizey), 0,
-			block["scale_x"],
-			block["scale_y"])
-		end	
-	end
-end
-
 function draw_block(block, pos_x, pos_y)
 	love.graphics.draw(block.sprite[math.floor(block.frame)], ((pos_x - 1) * tile_sizex), ((pos_y - 1) * tile_sizey), 0, block["scale_x"], block["scale_y"])
 end
@@ -71,8 +38,9 @@ end
 function draw_powerup(powerup, x, y)
 		local sx = powerup.block.scale_x - (0.1 * powerup.block.scale_x *  math.abs(math.cos(powerup.state)))
 		local sy = powerup.block.scale_y - (0.1 * powerup.block.scale_y * math.abs(math.cos(powerup.state)))
-		local px = ((powerup.x - 1) * tile_sizex) + (powerup.block.scale_x - sx) * tile_sizex / 2
-		local py = ((powerup.y - 1) * tile_sizey) + (powerup.block.scale_y - sy) * tile_sizey / 2
+		px, py = map_to_pix(powerup.x, powerup.y)
+		local px = px + (powerup.block.scale_x - sx) * tile_sizex / 2
+		local py = py + (powerup.block.scale_y - sy) * tile_sizey / 2
 		love.graphics.draw(powerup.block.sprite, px, py,
 		0, sx, sy)
 end
@@ -83,14 +51,42 @@ function draw_powerups()
 	end
 end
 
+function get_to_draw_map_pos(x, y, player)
+	if (not player) then
+		player = players[1]
+	end
+	local retx = (player.pos_x - view.w / 2) + (x - 1)
+	local rety = (player.pos_y - view.h / 2) + (y - 1)
+	if (player.pos_x >= x_fields - view.w / 2 + 1) then retx = x_fields - view.w + x end
+	if (player.pos_y >= y_fields - view.h / 2 + 1) then rety = y_fields - view.h + y end
+	if (player.pos_x <= view.w / 2 + 1) then retx = x end
+	if (player.pos_y <= view.h / 2 + 1) then rety = y end
+	if (retx >= x_fields + 1 or retx < 1) then retx = 1	end
+	if (rety >= y_fields + 1 or rety < 1) then rety = 1 end
+	return retx, rety
+end
+
+function map_to_pix(x, y, player)
+	if (not player) then
+		player = players[1]
+	end
+	local retx = x - player.pos_x + view.w / 2 + 1
+	local rety = y - player.pos_y + view.h / 2 + 1
+	if (player.pos_x >= x_fields - view.w / 2 + 1) then retx = view.w + (x - x_fields) end
+	if (player.pos_y >= y_fields - view.h / 2 + 1) then rety = view.h + (y - y_fields) end
+	if (player.pos_x <= view.w / 2 + 1) then retx = x end
+	if (player.pos_y <= view.h / 2 + 1) then rety = y end
+	retx, rety = map_to_pixel(retx, rety)
+	return retx, rety
+end
+
 function draw_map()
-	for i = 1, x_fields, 1 do
-		for j = 1, y_fields, 1 do
-			draw_block(map[j][i], i, j)
+	for i = 1, view.w + 1, 1 do
+		for j = 1, view.h + 1, 1 do
+			x, y = get_to_draw_map_pos(i, j)
+			draw_block(map[math.floor(y)][math.floor(x)], i - (x % 1), j - (y % 1 ))
 		end
 	end
---	draw_element(fire_blocks, fire_sprite, blocks.fire)
---	draw_element(electric_blocks, electric_sprite, blocks.bolt_ball)
 	draw_powerups()
 end
 
@@ -107,8 +103,9 @@ function draw_player_life(player)
 	elseif (player["life"] > 20) then love.graphics.setColor(150, 75, 0, 255)
 	else love.graphics.setColor(255, 0, 0, 255)
 	end
-	local pos_x = (player["pos_x"] - 1) * tile_sizex - tile_sizex / 2
-	local pos_y = (player["pos_y"] - 1) * tile_sizey - tile_sizey / 2 - nameplate_space_y - nameplate_h
+	pos_x, pos_y = map_to_pix(player.pos_x, player.pos_y)
+	pos_x = pos_x - tile_sizex / 2
+	pos_y = pos_y - tile_sizey / 2 - nameplate_space_y - nameplate_h
 	for i = 1, player["life"] / 20, 1 do
 		love.graphics.rectangle("fill", pos_x, pos_y, (nameplate_w - nameplate_space_x * 4) / 5, nameplate_h)	
 		pos_x = pos_x + (nameplate_w - nameplate_space_x * 4) / 5 + nameplate_space_x 
@@ -128,7 +125,7 @@ function draw_players(players, walk)
  	 			new_r = player["r"]
  			end
  			new_r = new_r % (math.pi * 2)
-			tmp_x, tmp_y = map_to_pixel(player["pos_x"], player["pos_y"])
+			tmp_x, tmp_y = map_to_pix(player.pos_x, player.pos_y)
 			tmp_x, tmp_y = rotate_pos(tmp_x, tmp_y, new_r, walk)		
 				love.graphics.setColor(player["color"][1], player["color"][2], player["color"][3], 255)						
 			if (math.floor(player["no_hit"] * 10) % 3 ~= 1) then

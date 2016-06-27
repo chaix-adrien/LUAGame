@@ -1,6 +1,6 @@
 function rotate_pos(x, y, r, sprite)
-	local new_x = (math.cos(-r) * (screen_w / x_fields) + math.sin(-r) * (screen_h / y_fields)) / 2
-	local new_y = (math.cos(-r) * (screen_h / y_fields) - math.sin(-r) * (screen_w / x_fields)) / 2
+	local new_x = (math.cos(-r) * tile_sizex + math.sin(-r) * tile_sizey) / 2
+	local new_y = (math.cos(-r) * tile_sizey - math.sin(-r) * tile_sizex) / 2
 	local tmp_x = x  - new_x
 	local tmp_y = y - new_y
 	return tmp_x, tmp_y
@@ -12,8 +12,9 @@ function draw_shield(player)
 		elseif (player["shield_life"] > 1) then love.graphics.setColor(50, 100, 255, 255)
 		elseif (player["shield_life"] > 0) then love.graphics.setColor(100, 200, 255, 255)
 		end
+		px, py = map_to_pix(player.pos_x, player.pos_y)
 		love.graphics.setLineWidth(6)
-		love.graphics.arc("line", "open", (player["pos_x"] - 1) * tile_sizex, (player["pos_y"] - 1) * tile_sizey, tile_sizey / 1.5, player["r"] - shield_size - rot, player["r"] + shield_size - rot, 20)
+		love.graphics.arc("line", "open", px, py, tile_sizey / 1.5, player["r"] - shield_size - rot, player["r"] + shield_size - rot, 20)
 		love.graphics.setLineWidth(2)
 		set_laser_color(player)
 		return (1)
@@ -68,13 +69,13 @@ function draw_fire(player)
 					break
 				end
 			end
-			if (shoot_on_mobs(player, tmp_posx, tmp_posy, 0) == 1) then
+			if (shoot_on_mobs(player, tmp_posx, tmp_posy, 0) ~= nil) then
 				hit = 1
 			end
 			if (hit == 1 or map[math.floor(tmp_posy)][math.floor(tmp_posx)]["crossable"] == 0) then
 				break
 			end
-			pix, piy = map_to_pixel(tmp_posx, tmp_posy)			
+			pix, piy = map_to_pix(tmp_posx, tmp_posy)			
 			love.graphics.rectangle("fill", pix, piy, 7, 7)	
 			tmp_posx = tmp_posx + vec_x
 			tmp_posy = tmp_posy + vec_y

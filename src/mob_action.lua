@@ -22,9 +22,13 @@ function walk_mob_hit(player, mob)
 end
 
 function draw_mob_basic(mob)
-	px, py = map_to_pixel(mob.pos.x, mob.pos.y)
+	px, py = map_to_pix(mob.pos.x, mob.pos.y)
 	px, py = rotate_pos(px, py, mob.r, mob.sprite[math.floor(mob.frame)])
+	if (mob.color) then
+		love.graphics.setColor(mob.color)
+	end
 	love.graphics.draw(mob.sprite[math.floor(mob.frame)], px, py, mob.r, mob.scale.x, mob.scale.y)
+	love.graphics.setColor(255, 255, 255, 255)
 end
 
 function kill_mob(player, mob, i, j)
