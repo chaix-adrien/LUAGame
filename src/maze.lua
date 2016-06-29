@@ -44,8 +44,7 @@ function show_map(tmp_map)
     end
 end
 
-function maze(mob)
-    print("hello", mob.pos.x, mob.pos.y)
+function maze(mob, dt) -- TODO prendre en compte dt 
     local player = nearest()
     local tmp_map = simplify_map()
     local player_pos = {x = math.floor(player.pos_x), y = math.floor(player.pos_y)}
@@ -113,11 +112,8 @@ function maze(mob)
         to_move.x = (path[1].x - mob.pos.x)
         to_move.y = (path[1].y - mob.pos.y)    
     end
-    print("to move", to_move.x, to_move.y)
-    print("path 1", path[1].x, path[1].y)
     to_move.x = (to_move.x / math.abs(to_move.x)) * frame_speed * mob.speed / 3
     to_move.y = (to_move.y / math.abs(to_move.y)) * frame_speed * mob.speed / 3
-    print("to move", to_move.x, to_move.y)    
     local tmp_y = math.floor(mob.pos.y + to_move.y)
     local tmp_x = math.floor(mob.pos.x + to_move.x)
     if (tmp_y > 1 and tmp_y <= #map and map[tmp_y][math.floor(mob.pos.x)].walkable == 1) then

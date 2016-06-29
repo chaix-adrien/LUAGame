@@ -74,13 +74,31 @@ function reset_blocks_mobs()
 	powerup_shield_block.scale_x, powerup_shield_block.scale_y = get_sprite_scale(powerup_shield_block.sprite)
 end
 
-function spawn_mob(type, px, py, state, rot, target, color)
+function concat_name(l1, l2)
+	local out = {}
+	print(type(l1))
+	if (type(l1) == "table") then
+		for i, value in pairs(l1) do
+			out[i] = value
+		end
+	else
+		table.insert(out, l1)
+	end
+	for i, value in pairs(l2) do
+		out[i] = l2[i]
+	end
+	return out
+end
+
+function spawn_mob(type, px, py, state, rot, target, color) -- TODO faire des creation de liste puis insert pour pouvoir mettre stat par defaut dans mob_ref
 	table.insert(mobs[type], copy_table(mobs_ref[type]))
 	mobs[type][#(mobs[type])].pos.x = px
 	mobs[type][#(mobs[type])].pos.y = py
 	mobs[type][#(mobs[type])].r = rot
 	mobs[type][#(mobs[type])].target = target
-	mobs[type][#(mobs[type])].state = state
+	if (state) then
+		mobs[type][#(mobs[type])].state = concat_name(mobs[type][#(mobs[type])].state, state)
+	end
 	mobs[type][#(mobs[type])].color = color	
 end
 
@@ -100,9 +118,10 @@ function  restart()
 	item_spawn = item_spawn_rate
 	set_volumes()
 	create_mobs()
-	--spawn_mob("turret_fixed", 3.5, 3.5, {fire_time = 0, fire_frequency = 2}, math.pi * 0.75)
-	--spawn_mob("turret_target", 7.5, 7.5, {fire_time = 0, fire_frequency = 2}, 0, players[1], {255, 100, 100, 255})
-	--spawn_mob("turret_rot", 10.5, 7.5, {fire_time = 0, fire_frequency = 2, min_rot = 0, max_rot = math.pi / 2, side = 1}, 0, nil, {100, 100, 255, 255})
+	spawn_mob("turret_fixed", 3.5, 3.5, nil, math.pi * 0.75)
+	spawn_mob("turret_target", 7.5, 7.5, nil, 0, players[1], {255, 100, 100, 255})
+	spawn_mob("turret_target_mobile", 9.5, 7.5, nil, 0, players[1], {255, 255, 100, 255})
+	spawn_mob("turret_rot", 10.5, 7.5, nil, 0, nil, {100, 100, 255, 255})
 	return 0
 end
 
@@ -246,16 +265,31 @@ function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, dra
 	return (mob)
 end
 
+function concat(l1, l2)
+	local lim = #l2
+	for i = 1, lim, 1 do
+		table.insert(l1, l2[i])
+	end
+	return l1
+end
+
 function load_mobs()
 	turret_sprite = love.graphics.newImage("mob/turret.png")
+	turret_move_sprite = {}
+	for i = 1, 4, 1 do
+		table.insert(turret_move_sprite, love.graphics.newImage("mob/turret_walk" .. i .. ".png"))
+	end
 	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1,
 	nil_func, update_mob_only_frame, draw_mob_basic, kill_mob, walk_mob_hit, kill_mob, 0, 1, 1, 5, 5, 0),
-	turret_fixed = load_mob("turret_fixed", 100, {turret_sprite}, 0, 1, 0,
+	turret_fixed = load_mob("turret_fixed", 100, {turret_sprite}, {fire_time = 0, fire_frequency = 2}, 1, 0,
 	nil_func, update_turret_fix, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
-	turret_target = load_mob("turret_target", 100, {turret_sprite}, 0, 1, 0,
+	turret_target = load_mob("turret_target", 100, {turret_sprite}, {fire_time = 0, fire_frequency = 2}, 1, 0,
 	nil_func, update_turret_target, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
-	turret_rot = load_mob("turret_rot", 100, {turret_sprite}, 0, 1, 0,
-	nil_func, update_turret_rot, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0)}
+	turret_rot = load_mob("turret_rot", 100, {turret_sprite}, {fire_time = 0, fire_frequency = 2, min_rot = 0, max_rot = math.pi / 2, side = 1}, 1, 0,
+	nil_func, update_turret_rot, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
+	turret_target_mobile = load_mob("turret_target_mobile", 100, concat({turret_sprite}, turret_move_sprite),
+	{fire_time = 0, fire_frequency = 1, mode = 0, mode_time = 1, turret_time = 5, cycle_time = 10}, 1, 0.5, -- TODO, prise en compte de speed
+	move_turret_target_mobile, update_turret_target_mobile, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0)}
 end
 
 function launch_quick_party()
