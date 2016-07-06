@@ -1,0 +1,150 @@
+mobs_ref
+table
+turret_fixed
+   {"rank":"life","value":100}
+   {"rank":"speed","value":0}
+   {"rank":"r","value":0}
+   table
+   size
+      {"rank":"y","value":1}
+      {"rank":"x","value":1}
+   end_table
+   table
+   pos
+      {"rank":"y","value":5}
+      {"rank":"x","value":5}
+   end_table
+   table
+   scale
+      {"rank":"y","value":0.625}
+      {"rank":"x","value":0.625}
+   end_table
+   {"rank":"frame","value":1}
+   table
+   state
+      {"rank":"fire_frequency","value":2}
+      {"rank":"fire_time","value":0}
+   end_table
+   {"rank":"crossable","value":0}
+   {"rank":"type","value":"turret_fixed"}
+end_table
+table
+turret_rot
+   {"rank":"life","value":100}
+   {"rank":"speed","value":0}
+   {"rank":"r","value":0}
+   table
+   size
+      {"rank":"y","value":1}
+      {"rank":"x","value":1}
+   end_table
+   table
+   pos
+      {"rank":"y","value":5}
+      {"rank":"x","value":5}
+   end_table
+   table
+   scale
+      {"rank":"y","value":0.625}
+      {"rank":"x","value":0.625}
+   end_table
+   {"rank":"frame","value":1}
+   table
+   state
+      {"rank":"fire_frequency","value":2}
+      {"rank":"fire_time","value":0}
+      {"rank":"side","value":1}
+      {"rank":"min_rot","value":0}
+      {"rank":"max_rot","value":1.5707963267949}
+   end_table
+   {"rank":"crossable","value":0}
+   {"rank":"type","value":"turret_rot"}
+end_table
+table
+zombie
+   {"rank":"life","value":100}
+   {"rank":"speed","value":1}
+   {"rank":"r","value":0}
+   table
+   size
+      {"rank":"y","value":1}
+      {"rank":"x","value":1}
+   end_table
+   table
+   pos
+      {"rank":"y","value":5}
+      {"rank":"x","value":5}
+   end_table
+   table
+   scale
+      {"rank":"y","value":0.625}
+      {"rank":"x","value":0.625}
+   end_table
+   {"rank":"frame","value":1}
+   {"rank":"state","value":0}
+   {"rank":"crossable","value":0}
+   {"rank":"type","value":"zombie"}
+end_table
+table
+turret_target_mobile
+   {"rank":"life","value":100}
+   {"rank":"speed","value":0.5}
+   {"rank":"r","value":0}
+   table
+   size
+      {"rank":"y","value":1}
+      {"rank":"x","value":1}
+   end_table
+   table
+   pos
+      {"rank":"y","value":5}
+      {"rank":"x","value":5}
+   end_table
+   table
+   scale
+      {"rank":"y","value":0.625}
+      {"rank":"x","value":0.625}
+   end_table
+   {"rank":"frame","value":1}
+   table
+   state
+      {"rank":"fire_frequency","value":1}
+      {"rank":"cycle_time","value":10}
+      {"rank":"fire_time","value":0}
+      {"rank":"mode_time","value":1}
+      {"rank":"mode","value":0}
+      {"rank":"turret_time","value":5}
+   end_table
+   {"rank":"crossable","value":0}
+   {"rank":"type","value":"turret_target_mobile"}
+end_table
+table
+turret_target
+   {"rank":"life","value":100}
+   {"rank":"speed","value":0}
+   {"rank":"r","value":0}
+   table
+   size
+      {"rank":"y","value":1}
+      {"rank":"x","value":1}
+   end_table
+   table
+   pos
+      {"rank":"y","value":5}
+      {"rank":"x","value":5}
+   end_table
+   table
+   scale
+      {"rank":"y","value":0.625}
+      {"rank":"x","value":0.625}
+   end_table
+   {"rank":"frame","value":1}
+   table
+   state
+      {"rank":"fire_frequency","value":2}
+      {"rank":"fire_time","value":0}
+   end_table
+   {"rank":"crossable","value":0}
+   {"rank":"type","value":"turret_target"}
+end_table
+end_table

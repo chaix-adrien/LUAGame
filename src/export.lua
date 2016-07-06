@@ -1,3 +1,15 @@
+function recur_copy_table(tab)
+    local copy = {}
+    for rank, value in pairs(tab) do
+        if (type(value) == "table") then
+            copy[rank] = recur_copy_table(value)
+        else
+            copy[rank] = value
+        end
+    end
+    return (copy)
+end
+
 function export_map(filename)
     local file = io.open(filename, "w+")
     io.output(file)
@@ -53,5 +65,105 @@ function import_map(filename)
         end
         table.insert(map, to_add)
     end
+    io.close(file)
     return map
+end
+
+function indent_write(to_write, depth, indent_width)
+    for i = 1, (depth * indent_width), 1 do
+        io.write(" ")
+    end
+    io.write(to_write)
+end
+
+function show_table(table, depth)
+    for rank, value in pairs(table) do
+        print("show for")
+        if (type(value) == "table") then
+            show_table(value, depth + 1)
+        elseif (type(value) ~= "function" and type(value) ~= "userdata") then
+            indent_write(rank .. " : " .. value, depth, 3)
+        end
+    end
+end
+
+function table_len(tab)
+    if (type(tab) ~= "table") then
+        return (0)
+    end
+    local ret = 0
+    for rnk, val in pairs(tab) do
+        print("vla =", val)
+        if (type(val) ~= "userdata" and type(val) ~= "function") then
+            ret = ret + 1
+        end
+    end 
+    print ("ret = ", ret)
+    return (ret)
+end
+
+function export_table(obj, depth)
+    for rnk, val in pairs(obj) do
+        local tmp_type = type(val)
+        print("rank", rnk, "type =", tmp_type)        
+        if (tmp_type ~= "function" and tmp_type ~= "table" and tmp_type ~= "userdata") then
+            local tmp = {rank = rnk, value = val}
+            indent_write(JSON:encode(tmp) .. "\n", depth, 3)
+        elseif (tmp_type == "table" and table_len(val) > 0) then
+            indent_write("table\n", depth, 3)
+            indent_write(rnk .. "\n", depth, 3)            
+            export_table(val, depth + 1)
+            indent_write("end_table\n", depth, 3)
+        end
+            print("\n\n")        
+    end
+end
+
+function export_list(list, filename, listname)
+    local file = io.open(filename, "w+")
+    io.output(file)
+    io.write(listname .. "\n")
+    export_table(list, 0)
+    io.write("end_table")
+    io.output(io.stdout)
+    io.close(file)
+end
+
+function import_table()
+    local out = {}
+    out["tab_name"] = io.read()
+    if (out["tab_name"] == nil) then
+        return nil
+    end
+    repeat
+        local tmp = io.read()
+        if (tmp == nil) then
+            return nil
+        else
+            tmp, trash = tmp:gsub(" ", "")
+        end
+        if (tmp == "table") then
+            local tmp_tab = import_table(file)
+            out[tmp_tab.tab_name] = tmp_tab
+            tmp_tab.tab_name = nil
+        elseif (tmp ~= "end_table") then
+            print("DECODE", "|" .. tmp .. "|")
+            local tab = JSON:decode(tmp)
+            out[tab.rank] = tab.value
+            print("added", tab.value)
+        end
+    until (tmp == "end_table")
+    print("out tab name ", out.tab_name)    
+    return (out)
+end
+
+function import_list(filename)
+    local file = io.open(filename, "r")
+    if (file == nil) then return nil end
+    io.input(file)
+    local out = import_table()
+    io.input(io.stdin)
+    io.close(file)
+    out.tab_name = nil
+    return (out)
 end
