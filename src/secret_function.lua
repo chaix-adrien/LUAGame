@@ -1,20 +1,49 @@
-function rotate_pos(x, y, r, sprite)
-	local new_x = (math.cos(-r) * tile_sizex + math.sin(-r) * tile_sizey) / 2
-	local new_y = (math.cos(-r) * tile_sizey - math.sin(-r) * tile_sizex) / 2
-	local tmp_x = x  - new_x
+function rotate_pos(x, y, r, sprite, focus)
+	if (focus and focus.cam_view) then -- TODO : faire un fonction qui donne tout ça
+		wiew = focus.cam_view
+	else
+		wiew = view
+	end
+	if (focus and focus.cam_size) then
+		screen = focus.cam_size
+	else
+		screen = {w = screen_w, h = screen_h}
+	end
+	local size = {w = screen.w / wiew.w, h = screen.h / wiew.h}
+	size.w = smaller(size)
+	size.h = size.w
+	local new_x = (math.cos(-r) * size.w + math.sin(-r) * size.h) / 2
+	local new_y = (math.cos(-r) * size.h - math.sin(-r) * size.w) / 2
+	local tmp_x = x - new_x
 	local tmp_y = y - new_y
 	return tmp_x, tmp_y
 end
 
-function draw_shield(player)
+function draw_shield(player, focus)
 	if (player["shield"] and player["shield"] == 1 and player["shield_life"] > 0) then
+		if ((not tile_sizex or not tile_sizey) and not focus) then
+			return 0, 0
+		end
+		if (focus and focus.cam_view) then
+			wiew = focus.cam_view
+		else
+			wiew = view
+		end
+		if (focus and focus.cam_size) then
+			screen = focus.cam_size
+		else
+			screen = {w = screen_w, h = screen_h}
+		end
+		local size = {w = screen.w / wiew.w, h = screen.h / wiew.h}
+		size.w = smaller(size)
+		size.h = size.w
 		if (player["shield_life"] > 2) then love.graphics.setColor(0, 0, 255, 255)
 		elseif (player["shield_life"] > 1) then love.graphics.setColor(50, 100, 255, 255)
 		elseif (player["shield_life"] > 0) then love.graphics.setColor(100, 200, 255, 255)
 		end
-		px, py = map_to_pix(player.pos_x, player.pos_y)
+		px, py = map_to_pix(player.pos_x, player.pos_y, focus)
 		love.graphics.setLineWidth(6)
-		love.graphics.arc("line", "open", px, py, tile_sizey / 1.5, player["r"] - shield_size - rot, player["r"] + shield_size - rot, 20)
+		love.graphics.arc("line", "open", px, py, size.w / 1.5, player["r"] - shield_size - rot, player["r"] + shield_size - rot, 20)
 		love.graphics.setLineWidth(2)
 		set_laser_color(player)
 		return (1)
@@ -50,9 +79,9 @@ function shoot_on_mobs(player, px, py, call_func)
 	return nil
 end
 
-function draw_fire(player)
+function draw_fire(player, focus)
 	if (player["shield"] and player["shield_life"]) then
-		draw_shield(player)
+		draw_shield(player, focus)
 	end
 	if (player["ammo"] > 0 and player["cooldown"] <= 0 and not (player["shield"] and player["shield"] ~= 0)) then
 		tmp_posx = player.pos_x
@@ -75,7 +104,7 @@ function draw_fire(player)
 			if (hit == 1 or map[math.floor(tmp_posy)][math.floor(tmp_posx)]["crossable"] == 0) then
 				break
 			end
-			pix, piy = map_to_pix(tmp_posx, tmp_posy)			
+			pix, piy = map_to_pix(tmp_posx, tmp_posy, focus)			
 			love.graphics.rectangle("fill", pix, piy, 7, 7)	
 			tmp_posx = tmp_posx + vec_x
 			tmp_posy = tmp_posy + vec_y

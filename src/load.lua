@@ -76,7 +76,6 @@ end
 
 function concat_name(l1, l2)
 	local out = {}
-	print(type(l1))
 	if (type(l1) == "table") then
 		for i, value in pairs(l1) do
 			out[i] = value
@@ -102,27 +101,38 @@ function spawn_mob(type, px, py, state, rot, target, color) -- TODO faire des cr
 	mobs[type][#(mobs[type])].color = color	
 end
 
-function  restart()
+function  restart_pvp()
 	powerups = {}
 	joysticks = love.joystick.getJoysticks()
 	if (table.getn(joysticks) < 1) then return 1 end
-	print(tile_sizex, tile_sizey)
-	tile_sizex = screen_w / view.w
-	tile_sizey = screen_h / view.h
+	tile_sizex = screen_w / x_fields -- TODO : si map < ratio screen, calculler tile size autrement pour que block carré, add pos map par rapport a l'ecran
+	tile_sizey = screen_h / y_fields
 	reset_blocks_mobs()
 	load_player_joystick()
-	print(tile_sizex, tile_sizey,players[1].scale_x, players[1].scale_y)
 	map = gen_map(x_fields, y_fields, 10)
 	spawn_players(players, map, x_fields, y_fields)
 	game_victory = 0
 	item_spawn = item_spawn_rate
 	set_volumes()
 	create_mobs()
-	spawn_mob("turret_fixed", 3.5, 3.5, nil, math.pi * 0.75)
-	spawn_mob("turret_target", 7.5, 7.5, nil, 0, players[1], {255, 100, 100, 255})
-	spawn_mob("turret_target_mobile", 9.5, 7.5, nil, 0, players[1], {255, 255, 100, 255})
-	spawn_mob("turret_rot", 10.5, 7.5, nil, 0, nil, {100, 100, 255, 255})
+	--spawn_mob("turret_fixed", 3.5, 3.5, nil, math.pi * 0.75)
+	--spawn_mob("turret_target", 7.5, 7.5, nil, 0, players[1], {255, 100, 100, 255})
+	--spawn_mob("turret_target_mobile", 9.5, 7.5, nil, 0, players[1], {255, 255, 100, 255})
+	--spawn_mob("turret_rot", 10.5, 7.5, nil, 0, nil, {100, 100, 255, 255})
 	return 0
+end
+
+function restart_editor()
+	powerups = {}
+	players = {}
+	tile_sizex = screen_w / view.w
+	tile_sizey = screen_h / view.h
+	reset_blocks_mobs()
+	print("Load editor")
+	cam = {pos_x = x_fields / 2, pos_y = y_fields / 2, target = nil, cam_view = {w = x_fields, h = y_fields}}
+	map = gen_map(x_fields, y_fields, 0)
+	set_volumes()
+	create_mobs()
 end
 
 function load_block(typeof, sprites, walkability, cross, animate, status, frames, shoot, walk, cut)
@@ -293,12 +303,26 @@ function load_mobs()
 end
 
 function launch_quick_party()
-	if (restart() == 1) then
+	view.x = x_fields
+	view.y = y_fields
+	if (restart_pvp() == 1) then
 		return
 	end
 	love.update = update_game
 	love.draw = draw_game
 end
+
+function launch_editor(x, y)
+	print("Launch editor")
+	view.x = x_fields
+	view.y = y_fields
+	if (restart_editor() == 1) then
+		return
+	end
+	love.update = update_editor
+	love.draw = draw_editor
+end
+
 
 function love.load()
 	math.randomseed(os.time())
@@ -316,9 +340,12 @@ function love.load()
 	love.window.setMode(screen_w, screen_h)
 	love.window.setFullscreen(fullscreen, "exclusive")
 	load_mobs()
-	if (launch_on_menu == 1) then
+	print(launch_on)
+	if (launch_on == "menu") then
 		launch_menu(main_menu)
-	else
+	elseif (launch_on == "pvp") then
 		launch_quick_party()
+	elseif (launch_on == "editor") then
+		launch_editor(x_fields, y_fields)
 	end
 end

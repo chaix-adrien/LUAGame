@@ -1,9 +1,22 @@
-function get_sprite_scale(sprite)
-	if (not tile_sizex or not tile_sizey) then
+function get_sprite_scale(sprite, focus) -- prendre focus
+	if ((not tile_sizex or not tile_sizey) and not focus) then
 		return 0, 0
 	end
-	local x = tile_sizex / sprite:getWidth()
-	local y = tile_sizey / sprite:getHeight()
+	if (focus and focus.cam_view) then
+		wiew = focus.cam_view
+	else
+		wiew = view
+	end
+	if (focus and focus.cam_size) then
+		screen = focus.cam_size
+	else
+		screen = {w = screen_w, h = screen_h}
+	end
+	local size = {w = screen.w / wiew.w, h = screen.h / wiew.h}
+	size.w = smaller(size)
+	size.h = size.w
+	local x = size.w / sprite:getWidth()
+	local y = size.h / sprite:getHeight()
 	return x, y
 end
 
@@ -19,9 +32,30 @@ function get_view_vector(r, divide)
 	return vec_x, vec_y
 end
 
-function map_to_pixel(x, y)
-	local new_x = (x - 1) * tile_sizex
-	local new_y = (y - 1) * tile_sizey
+function map_to_pixel(x, y, focus)
+	if (not focus) then
+		return x, y
+	end
+	if (focus and focus.cam_view) then
+		wiew = focus.cam_view
+	else
+		wiew = view
+	end
+	if (focus and focus.cam_pos_pix) then
+		pos_pix = focus.cam_pos_pix
+	else
+		pos_pix = {x = 0, y = 0}
+	end
+	if (focus and focus.cam_size) then
+		size_screen = focus.cam_size
+	else
+		size_screen = {w = screen_w, h = screen_h}
+	end
+	local size = {x = size_screen.w / wiew.w, y = size_screen.h / wiew.h}
+	size.w = smaller(size)
+	size.h = size.w
+	local new_x = pos_pix.x + (x - 1) * size.w
+	local new_y = pos_pix.y + (y - 1) * size.h
 	return new_x, new_y
 end
 
@@ -72,4 +106,14 @@ end
 function vec_to_r(x, y)
 	local r = math.atan2(y, x) + math.pi / 2
 	return r
+end
+
+function smaller(list)
+	local out = nil
+	for i, value in pairs(list) do
+		if (not out or value < out) then
+			out = value
+		end
+	end
+	return out
 end

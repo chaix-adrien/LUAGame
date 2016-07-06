@@ -21,8 +21,8 @@ function walk_mob_hit(player, mob)
 	player.no_hit = 1
 end
 
-function draw_mob_basic(mob)
-	px, py = map_to_pix(mob.pos.x, mob.pos.y)
+function draw_mob_basic(mob, focus)
+	px, py = map_to_pix(mob.pos.x, mob.pos.y, focus)
 	px, py = rotate_pos(px, py, mob.r, mob.sprite[math.floor(mob.frame)])
 	if (mob.color) then
 		love.graphics.setColor(mob.color)
@@ -69,13 +69,6 @@ function update_turret_target(mob, dt)
 	end
 end
 
-function move_of(p, v, i)
-	local n = math.sqrt(math.pow(v.x, 2) + math.pow(v.y, 2))
-	local nv = {x = (v.x / n) * i, y = (v.y / n) * i}
-	local np = {x = p.x + nv.x, y = p.y + nv.y}
-	return np.x, np.y
-end
-
 function move_turret_target_mobile(mob, dt)
 	if (mob.state.mode == 1) then
 		maze(mob)
@@ -87,14 +80,14 @@ function move_turret_target_mobile(mob, dt)
 	end
 end
 
-function update_turret_target_mobile(mob, dt) -- TODO, metre timer marche / turret en state
+function update_turret_target_mobile(mob, dt)
 	mob.state.fire_time = mob.state.fire_time + dt
 	if (mob.state.fire_time >= mob.state.fire_frequency and mob.state.mode_time > 1 and mob.state.mode_time < mob.state.turret_time - 1) then
 		shoot(mob.pos, mob.r, 10)
 		mob.state.fire_time = 0
 	end
 	if (mob.target ~= nil and mob.state.fire_time < mob.state.fire_frequency - 0.2) then
-		local r = vec_to_r(mob.target.pos_x - mob.pos.x, mob.target.pos_y - mob.pos.y) -- TODO NOW : rotate etrange
+		local r = vec_to_r(mob.target.pos_x - mob.pos.x, mob.target.pos_y - mob.pos.y) -- TODO : rotate etrange
 		mob.r = mob.r + ((r - mob.r) / 10)
 	end
 	if (mob.state.mode == 0 and mob.state.mode_time >= mob.state.turret_time) then mob.state.mode = 1

@@ -1,3 +1,20 @@
+
+function move_of(p, v, i, fly)
+	local n = math.sqrt(math.pow(v.x, 2) + math.pow(v.y, 2))
+	local nv = {x = (v.x / n) * i, y = (v.y / n) * i}
+	local np = {x = p.x + nv.x, y = p.y + nv.y}
+	local out = {x = p.x, y = p.y}
+	if ((np.y >= 1 and np.y <= y_fields + 1) and (fly == 1 or map[math.floor(np.y)][math.floor(p.x)].walkable == 1)) then
+		print("movey")
+		out.y = np.y
+	end
+	if ((np.x >= 1 and np.x <= x_fields + 1) and (fly == 1 or map[math.floor(out.y)][math.floor(np.x)].walkable == 1)) then
+		print("moevx")
+		out.x = np.x
+	end
+	return out.x, out.y
+end
+
 function walked_on_mobs(player)
 	for i, mob_type in pairs(mobs) do
 		for j, mob in pairs(mob_type) do
@@ -12,24 +29,10 @@ function move_player(value, i)
 	local done = 0
 	local x = joysticks[i]:getGamepadAxis("leftx")
 	local y = joysticks[i]:getGamepadAxis("lefty")
-	local new_x = math.floor(value["pos_x"] + x * value["speed"])
-	local new_y = math.floor(value["pos_y"] + y * value["speed"])
 	if (math.abs(x) > 0.2 or math.abs(y) > 0.2) then
-		if (new_y <= y_fields and new_y >= 1) then
-			if (map[new_y][math.floor(value["pos_x"])]["walkable"] == 1) then
-				value["pos_y"] = value["pos_y"] + y * value["speed"]
-				done = 1
-			end
-		end
-		if (new_x <= x_fields and new_x >= 1) then
-			if (map[math.floor(value["pos_y"])][new_x]["walkable"] == 1) then
-				value["pos_x"] = value["pos_x"] + x * value["speed"]
-			end
-		end
-		if done then
-			value["frame"] = value["frame"] + (1 / 4)
-			if value["frame"] > 4.0 then value["frame"] = 1 end
-		end
+		value.pos_x, value.pos_y = move_of({x = value.pos_x, y = value.pos_y}, {x = x, y = y}, value.speed)		
+		value["frame"] = value["frame"] + (1 / 4)
+		if value["frame"] > 4.0 then value["frame"] = 1 end
 	end
 	map[math.floor(value["pos_y"])][math.floor(value["pos_x"])]["walked_on"] (math.floor(value["pos_x"]), math.floor(value["pos_y"]), value)
 	walked_on_mobs(value)
@@ -179,6 +182,9 @@ function update_mobs(dt)
 	end
 end
 
+function udpate_editor(dt)
+end
+
 total_time = 0
 function update_game(dt)
 	if (love.timer.getFPS() > 10) then
@@ -197,7 +203,7 @@ function update_game(dt)
 	update_element(electric_blocks, dt)
 	update_item(dt)
 	if (love.keyboard.isDown("space")) then
-		restart()
+		restart_pvp()
 	end
 	if (love.keyboard.isDown('k')) then
 		players[1].alive = 0
