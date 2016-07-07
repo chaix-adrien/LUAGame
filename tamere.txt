@@ -29,31 +29,6 @@ turret_fixed
    end_table
 end_table
 table
-zombie
-   table
-      scale
-      {"rank":"y","value":0.625}
-      {"rank":"x","value":0.625}
-   end_table
-   {"rank":"life","value":100}
-   {"rank":"speed","value":1}
-   {"rank":"type","value":"zombie"}
-   table
-      size
-      {"rank":"y","value":1}
-      {"rank":"x","value":1}
-   end_table
-   {"rank":"frame","value":1}
-   {"rank":"r","value":0}
-   {"rank":"crossable","value":0}
-   table
-      pos
-      {"rank":"y","value":5}
-      {"rank":"x","value":5}
-   end_table
-   {"rank":"state","value":0}
-end_table
-table
 turret_rot
    table
       scale
@@ -83,6 +58,69 @@ turret_rot
       {"rank":"min_rot","value":0}
       {"rank":"side","value":1}
       {"rank":"max_rot","value":1.5707963267949}
+   end_table
+end_table
+table
+zombie
+   table
+      scale
+      {"rank":"y","value":0.625}
+      {"rank":"x","value":0.625}
+   end_table
+   {"rank":"life","value":100}
+   {"rank":"speed","value":1}
+   {"rank":"type","value":"zombie"}
+   table
+      size
+      {"rank":"y","value":1}
+      {"rank":"x","value":1}
+   end_table
+   {"rank":"frame","value":1}
+   {"rank":"r","value":0}
+   {"rank":"crossable","value":0}
+   table
+      pos
+      {"rank":"y","value":5}
+      {"rank":"x","value":5}
+   end_table
+   {"rank":"state","value":0}
+end_table
+table
+zombie_turn_last
+   table
+      scale
+      {"rank":"y","value":0.5}
+      {"rank":"x","value":0.5}
+   end_table
+   {"rank":"life","value":100}
+   {"rank":"speed","value":0.5}
+   {"rank":"type","value":"zombie_turn_last"}
+   table
+      size
+      {"rank":"y","value":1}
+      {"rank":"x","value":1}
+   end_table
+   {"rank":"frame","value":1}
+   {"rank":"r","value":0}
+   {"rank":"crossable","value":0}
+   table
+      pos
+      {"rank":"y","value":5}
+      {"rank":"x","value":5}
+   end_table
+   table
+      state
+      table
+            dest
+         {"rank":"y","value":3.5}
+         {"rank":"x","value":10}
+      end_table
+      table
+            move
+         {"rank":"y","value":0}
+         {"rank":"x","value":0.025}
+      end_table
+      {"rank":"intersec","value":0.5}
    end_table
 end_table
 table

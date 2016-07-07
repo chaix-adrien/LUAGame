@@ -25,7 +25,7 @@ function reset_player(player)
 	player["alive"] = 1
 	player["pos_x"] = 0
 	player["pos_y"] = 0
-	player["speed"] = 0.1
+	player["speed"] = 1
 	player["life"] = 100
 	player["shield"] = 0
 	player["shield_life"] = 3

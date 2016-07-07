@@ -40,9 +40,9 @@ end
 function draw_powerup(powerup, x, y, focus)
 		local sx = powerup.block.scale_x - (0.1 * powerup.block.scale_x *  math.abs(math.cos(powerup.state)))
 		local sy = powerup.block.scale_y - (0.1 * powerup.block.scale_y * math.abs(math.cos(powerup.state)))
-		px, py = map_to_pix(powerup.x, powerup.y, focus)
-		local px = px + (powerup.block.scale_x - sx) * tile_sizex / 2
-		local py = py + (powerup.block.scale_y - sy) * tile_sizey / 2
+		local px = powerup.x + 0.4 - sx / 1.5
+		local py = powerup.y + 0.4 - sy / 1.5
+		px, py = map_to_pix(px, py, focus)
 		love.graphics.draw(powerup.block.sprite, px, py,
 		0, sx, sy)
 end
@@ -185,7 +185,7 @@ end
 function draw_mobs(focus)
 	for i, mob_type in pairs(mobs) do
 		for j, mob in pairs(mob_type) do
-			mob.draw(mob, i, j, focus)
+			mob.draw(mob, focus)
 		end
 	end
 end

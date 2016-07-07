@@ -115,6 +115,7 @@ function  restart_pvp()
 	item_spawn = item_spawn_rate
 	set_volumes()
 	create_mobs()
+	spawn_mob("zombie_turn_last", 3.5, 3.5, {move = {x = 1, y = 0}}, math.pi * 0.75)
 	--spawn_mob("turret_fixed", 3.5, 3.5, nil, math.pi * 0.75)
 	--spawn_mob("turret_target", 7.5, 7.5, nil, 0, players[1], {255, 100, 100, 255})
 	--spawn_mob("turret_target_mobile", 9.5, 7.5, nil, 0, players[1], {255, 255, 100, 255})
@@ -128,7 +129,6 @@ function restart_editor()
 	tile_sizex = screen_w / view.w
 	tile_sizey = screen_h / view.h
 	reset_blocks_mobs()
-	print("Load editor")
 	cam = {pos_x = x_fields / 2, pos_y = y_fields / 2, target = nil, cam_view = {w = x_fields, h = y_fields}}
 	map = gen_map(x_fields, y_fields, 0)
 	set_volumes()
@@ -187,7 +187,7 @@ function load_animation()
 		table.insert(electric_box_sprite, love.graphics.newImage("block/bolt_sizzle/bolt_sizzle_000" .. tostring(i) .. ".png"))
 	end
 	waterbomb_sprite = {}
-	for i = 1, 8, 1 do
+	for i = 1, 1, 1 do
 		table.insert(waterbomb_sprite, love.graphics.newImage("block/waterbomb/" .. tostring(i) .. ".jpg"))
 	end
 end
@@ -275,14 +275,6 @@ function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, dra
 	return (mob)
 end
 
-function concat(l1, l2)
-	local lim = #l2
-	for i = 1, lim, 1 do
-		table.insert(l1, l2[i])
-	end
-	return l1
-end
-
 function load_mobs()
 	turret_sprite = love.graphics.newImage("mob/turret.png")
 	turret_move_sprite = {}
@@ -299,7 +291,18 @@ function load_mobs()
 	nil_func, update_turret_rot, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
 	turret_target_mobile = load_mob("turret_target_mobile", 100, concat({turret_sprite}, turret_move_sprite),
 	{fire_time = 0, fire_frequency = 1, mode = 0, mode_time = 1, turret_time = 5, cycle_time = 10}, 1, 0.5, -- TODO, prise en compte de speed
-	move_turret_target_mobile, update_turret_target_mobile, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0)}
+	move_turret_target_mobile, update_turret_target_mobile, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
+	zombie_turn_last = load_mob("zombie_turn_last", 100, walk,
+	{dest = {x = 10, y = 3.5}, move = {x = frame_speed / 4, y = 0}, intersec = 0.5}, 1, 0.5, -- TODO, prise en compte de speed
+	move_zombie_turn_last, nil_func, draw_mob_basic, nil_func, walk_mob_hit, nil_func, 0, 1, 1, 5, 5, 0)}
+end
+
+function concat(l1, l2)
+	local lim = #l2
+	for i = 1, lim, 1 do
+		table.insert(l1, l2[i])
+	end
+	return l1
 end
 
 function launch_quick_party()
@@ -313,7 +316,6 @@ function launch_quick_party()
 end
 
 function launch_editor(x, y)
-	print("Launch editor")
 	view.x = x_fields
 	view.y = y_fields
 	if (restart_editor() == 1) then
@@ -339,12 +341,10 @@ function love.load()
 	powerups = {}
 	export_list(mobs_ref, "tachatte.txt", "mobs_ref")
 	local mylist = import_list("tachatte.txt")
-	print(m)
 	export_list(mylist, "tamere.txt", "mylist")
 	love.window.setMode(screen_w, screen_h)
 	love.window.setFullscreen(fullscreen, "exclusive")
 	load_mobs()
-	print(launch_on)
 	if (launch_on == "menu") then
 		launch_menu(main_menu)
 	elseif (launch_on == "pvp") then

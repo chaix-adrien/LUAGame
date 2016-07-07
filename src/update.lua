@@ -5,11 +5,9 @@ function move_of(p, v, i, fly)
 	local np = {x = p.x + nv.x, y = p.y + nv.y}
 	local out = {x = p.x, y = p.y}
 	if ((np.y >= 1 and np.y <= y_fields + 1) and (fly == 1 or map[math.floor(np.y)][math.floor(p.x)].walkable == 1)) then
-		print("movey")
 		out.y = np.y
 	end
 	if ((np.x >= 1 and np.x <= x_fields + 1) and (fly == 1 or map[math.floor(out.y)][math.floor(np.x)].walkable == 1)) then
-		print("moevx")
 		out.x = np.x
 	end
 	return out.x, out.y
@@ -25,7 +23,7 @@ function walked_on_mobs(player)
 	end
 end
 
-function move_player(value, i)
+function move_player(value, i, dt)
 	local done = 0
 	local x = joysticks[i]:getGamepadAxis("leftx")
 	local y = joysticks[i]:getGamepadAxis("lefty")
@@ -131,7 +129,7 @@ function update_player(value, i, dt)
 	if (value["no_hit"] > 0) then
 		value["no_hit"] = value["no_hit"] - dt
 	end
-	move_player(value, i)
+	move_player(value, i, dt)
 	update_weapon_player(value, i)
 	if (i and value["life"] <= 0) then
         value.alive = 0    
@@ -178,6 +176,9 @@ function update_mobs(dt)
 			update_mob_target(mob)
 			mob.update(mob, dt)
 			mob.move(mob, dt)
+			if (mob.life <= 0) then
+				table.remove(mobs[i], j)
+			end
 		end
 	end
 end

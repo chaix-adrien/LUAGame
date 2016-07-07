@@ -17,8 +17,7 @@ function move_mob_rand(mob)
 end
 
 function walk_mob_hit(player, mob)
-	player.life = player.life - 20
-	player.no_hit = 1
+	deal_dammages(player, 20, 1)
 end
 
 function draw_mob_basic(mob, focus)
@@ -29,6 +28,10 @@ function draw_mob_basic(mob, focus)
 	end
 	love.graphics.draw(mob.sprite[math.floor(mob.frame)], px, py, mob.r, mob.scale.x, mob.scale.y)
 	love.graphics.setColor(255, 255, 255, 255)
+end
+
+function deal_20_damage(player, mob, i, j)
+	deal_dammages(mob, 20)
 end
 
 function kill_mob(player, mob, i, j)

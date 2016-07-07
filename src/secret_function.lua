@@ -124,6 +124,8 @@ function cut_on_mobs(player, pos)
 		for j, mob in pairs(mob_type) do
 			if (is_on_mob(pos.x, pos.y, mob) == 1) then
 				mob.cuted_on(player, mob, i, j)
+				deal_dammages(mob, 10, 2)
+				cut_sound:play()
 			end
 		end
 	end
@@ -133,8 +135,7 @@ function cut_attack(player)
 	for i, target in pairs(players) do
 		if (target["name"] ~= player["name"] and
 			math.sqrt(math.pow(target.pos_x - player.pos_x, 2) + math.pow(target.pos_y - player.pos_y, 2)) < 1) then
-			target["life"] = target["life"] - 10
-			target["no_hit"] = 2
+			deal_dammages(target, 10, 2)
 			cut_sound:play()
 		end
 	end
@@ -235,12 +236,7 @@ function shoot(pos, r, damage, player) -- TODO : passer sound en param
 	end
 	if (target and not (target.no_hit and target.no_hit > 0)) then
 		laser2:play()
-		if (target.life) then
-			target.life = target.life - damage
-		end
-		if (target.no_hit) then
-			target["no_hit"] = 2
-		end
+		deal_dammages(target, damage, 2)
 	else
 		laser:play()
 	end

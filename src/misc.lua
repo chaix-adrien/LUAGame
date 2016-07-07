@@ -117,3 +117,12 @@ function smaller(list)
 	end
 	return out
 end
+
+function deal_dammages(entity, damage, no_hit)
+	if (not (entity.no_hit and entity.no_hit > 0) and entity.life) then
+		entity.life = entity.life - damage
+	end
+	if (no_hit and entity.no_hit and entity.no_hit < 0) then
+		entity.no_hit = no_hit
+	end
+end

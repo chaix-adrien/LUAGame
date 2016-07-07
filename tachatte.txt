@@ -86,6 +86,44 @@ zombie
    {"rank":"type","value":"zombie"}
 end_table
 table
+zombie_turn_last
+   {"rank":"life","value":100}
+   {"rank":"speed","value":0.5}
+   {"rank":"r","value":0}
+   table
+   size
+      {"rank":"y","value":1}
+      {"rank":"x","value":1}
+   end_table
+   table
+   pos
+      {"rank":"y","value":5}
+      {"rank":"x","value":5}
+   end_table
+   table
+   scale
+      {"rank":"y","value":0.5}
+      {"rank":"x","value":0.5}
+   end_table
+   {"rank":"frame","value":1}
+   table
+   state
+      table
+      move
+         {"rank":"y","value":0}
+         {"rank":"x","value":0.025}
+      end_table
+      table
+      dest
+         {"rank":"y","value":3.5}
+         {"rank":"x","value":10}
+      end_table
+      {"rank":"intersec","value":0.5}
+   end_table
+   {"rank":"crossable","value":0}
+   {"rank":"type","value":"zombie_turn_last"}
+end_table
+table
 turret_target_mobile
    {"rank":"life","value":100}
    {"rank":"speed","value":0.5}

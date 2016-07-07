@@ -34,8 +34,14 @@ function explode(x, y, player)
 				end
 				for p, player in pairs(players) do
 					if (math.floor(player["pos_x"]) == j and math.floor(player["pos_y"]) == i) then
-						player["life"] = player["life"] - 40
-						player["no_hit"] = 2
+						deal_dammages(player, 40, 2)
+					end
+				end
+				for a, type in pairs(mobs) do
+					for b, mob in pairs(type) do
+						if (math.floor(mob.pos.x) == j and math.floor(mob.pos.y) == i) then
+							deal_dammages(mob, 40, 2)
+						end
 					end
 				end
 			end
@@ -90,10 +96,7 @@ function reset_status(x, y, player)
 end
 
 function fire_damage(x, y, player)
-	if (player["no_hit"] <= 0) then
-		player["life"] = player["life"] - 10
-		player["no_hit"] = 1
-	end
+	deal_dammages(player, 10, 1)
 end
 
 function electric_damage(x, y, player)

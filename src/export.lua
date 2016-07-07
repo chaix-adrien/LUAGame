@@ -78,7 +78,6 @@ end
 
 function show_table(table, depth)
     for rank, value in pairs(table) do
-        print("show for")
         if (type(value) == "table") then
             show_table(value, depth + 1)
         elseif (type(value) ~= "function" and type(value) ~= "userdata") then
@@ -93,19 +92,16 @@ function table_len(tab)
     end
     local ret = 0
     for rnk, val in pairs(tab) do
-        print("vla =", val)
         if (type(val) ~= "userdata" and type(val) ~= "function") then
             ret = ret + 1
         end
     end 
-    print ("ret = ", ret)
     return (ret)
 end
 
 function export_table(obj, depth)
     for rnk, val in pairs(obj) do
         local tmp_type = type(val)
-        print("rank", rnk, "type =", tmp_type)        
         if (tmp_type ~= "function" and tmp_type ~= "table" and tmp_type ~= "userdata") then
             local tmp = {rank = rnk, value = val}
             indent_write(JSON:encode(tmp) .. "\n", depth, 3)
@@ -115,7 +111,6 @@ function export_table(obj, depth)
             export_table(val, depth + 1)
             indent_write("end_table\n", depth, 3)
         end
-            print("\n\n")        
     end
 end
 
@@ -147,13 +142,10 @@ function import_table()
             out[tmp_tab.tab_name] = tmp_tab
             tmp_tab.tab_name = nil
         elseif (tmp ~= "end_table") then
-            print("DECODE", "|" .. tmp .. "|")
             local tab = JSON:decode(tmp)
             out[tab.rank] = tab.value
-            print("added", tab.value)
         end
     until (tmp == "end_table")
-    print("out tab name ", out.tab_name)    
     return (out)
 end
 

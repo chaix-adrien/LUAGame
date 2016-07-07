@@ -5,15 +5,14 @@ y_fields = 9
 view = {w = 16, h = 9}
 rot = math.pi / 2
 shield_size = 1 / 2 * math.pi
-fire_sprite_max = 6
-fire_sprite_max = 10
-fire_time = 5
 item_spawn_rate = 10
 game_victory = 0
 auto_reload = 1
+default_speed = 0.1
+fire_time = 2.5
+frame_speed = default_speed
+
+launch_on = "pvp" -- pvp / menu / editor
 music_volume = 1
 sound_volume = 1
 fullscreen = false
-launch_on = "pvp"
-default_speed = 0.1
-frame_speed = default_speed
