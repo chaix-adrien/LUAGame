@@ -2,6 +2,21 @@ function nil_func()
 	return nil
 end
 
+
+
+function update_mob_frame_loop(mob, dt)
+	mob.frame = mob.frame + 2 * frame_speed * mob.state.loop_frame
+	if (mob.frame > table.getn(mob.sprite) or mob.frame <= 1) then
+		mob.state.loop_frame = -mob.state.loop_frame
+	end
+	if (mob.frame > table.getn(mob.sprite)) then
+		mob.frame = table.getn(mob.sprite)
+	end
+	if (mob.frame < 1) then
+		mob.frame = 1
+	end
+end
+
 function update_mob_only_frame(mob, dt)
 	mob.frame = mob.frame + 2 * frame_speed
 	if (mob.frame > #mob.sprite) then
@@ -18,6 +33,17 @@ end
 
 function walk_mob_hit(player, mob)
 	deal_dammages(player, 20, 1)
+end
+
+function draw_mob_loop(mob, focus)
+	px, py = map_to_pix(mob.pos.x, mob.pos.y, focus)
+	print(mob.frame)
+	px, py = rotate_pos(px, py, mob.r, mob.sprite[math.floor(mob.frame)])
+	if (mob.color) then
+		love.graphics.setColor(mob.color)
+	end
+	love.graphics.draw(mob.sprite[math.floor(mob.frame)], px, py, mob.r, mob.scale.x, mob.scale.y)
+	love.graphics.setColor(255, 255, 255, 255)
 end
 
 function draw_mob_basic(mob, focus)

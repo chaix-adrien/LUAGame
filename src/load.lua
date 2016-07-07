@@ -115,7 +115,7 @@ function  restart_pvp()
 	item_spawn = item_spawn_rate
 	set_volumes()
 	create_mobs()
-	spawn_mob("zombie_turn_last", 3.5, 3.5, {move = {x = 1, y = 0}}, math.pi * 0.75)
+	spawn_mob("randbomb", 3.5, 3.5, {move = {x = 1, y = 0}}, math.pi * 0.75)
 	--spawn_mob("turret_fixed", 3.5, 3.5, nil, math.pi * 0.75)
 	--spawn_mob("turret_target", 7.5, 7.5, nil, 0, players[1], {255, 100, 100, 255})
 	--spawn_mob("turret_target_mobile", 9.5, 7.5, nil, 0, players[1], {255, 255, 100, 255})
@@ -186,9 +186,13 @@ function load_animation()
 	for i = 1, 10, 1 do
 		table.insert(electric_box_sprite, love.graphics.newImage("block/bolt_sizzle/bolt_sizzle_000" .. tostring(i) .. ".png"))
 	end
-	waterbomb_sprite = {}
+	waterbomb_sprite = {} -- TODO: annimer leau
 	for i = 1, 1, 1 do
 		table.insert(waterbomb_sprite, love.graphics.newImage("block/waterbomb/" .. tostring(i) .. ".jpg"))
+	end
+	randbomb_sprite = {}
+	for i = 1, 9, 1 do
+		table.insert(randbomb_sprite, love.graphics.newImage("mob/randbomb/randbomb" .. tostring(i) .. ".png"))
 	end
 end
 
@@ -292,9 +296,9 @@ function load_mobs()
 	turret_target_mobile = load_mob("turret_target_mobile", 100, concat({turret_sprite}, turret_move_sprite),
 	{fire_time = 0, fire_frequency = 1, mode = 0, mode_time = 1, turret_time = 5, cycle_time = 10}, 1, 0.5, -- TODO, prise en compte de speed
 	move_turret_target_mobile, update_turret_target_mobile, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
-	zombie_turn_last = load_mob("zombie_turn_last", 100, walk,
-	{dest = {x = 10, y = 3.5}, move = {x = frame_speed / 4, y = 0}, intersec = 0.5}, 1, 0.5, -- TODO, prise en compte de speed
-	move_zombie_turn_last, nil_func, draw_mob_basic, nil_func, walk_mob_hit, nil_func, 0, 1, 1, 5, 5, 0)}
+	randbomb = load_mob("randbomb", 100, randbomb_sprite,
+	{move = {x = frame_speed / 4, y = 0}, intersec = 0.5, loop_frame = 1}, 1, 0.5, -- TODO, prise en compte de speed
+	move_zombie_turn_last, update_mob_frame_loop, draw_mob_loop, nil_func, walk_mob_hit, nil_func, 0, 1, 1, 5, 5, 0)}
 end
 
 function concat(l1, l2)
