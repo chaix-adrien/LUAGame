@@ -28,6 +28,8 @@ function gen_map(x, y, rate)
 				table.insert(to_add, copy_table(blocks.electric_box))
 			elseif (love.math.random(rate * 4) == ((rate))) then
 				table.insert(to_add, copy_table(blocks.waterbomb))
+			elseif (love.math.random(rate) == ((rate))) then
+				table.insert(to_add, copy_table(blocks.one_dir))
 			elseif (love.math.random(rate * 20) == ((rate))) then
 				table.insert(to_add, copy_table(blocks.chest))
 			else
@@ -149,7 +151,7 @@ function load_powerup(typeof, name, walkability, cross, walk)
 end
 
 function  load_blocks()
-    blocks = {floor = load_block("floor", {love.graphics.newImage("block/floor.png")}, 1, 1, 0, 0, 1, shoot_on_nothing, reset_status, cut_on_nothing),
+    blocks = {floor = load_block("floor", {love.graphics.newImage("block/floor.png")}, 1, 1, 0, 0, 1, shooted_on_nothing, reset_status, cut_on_nothing),
 	    brick = load_block("brick", {love.graphics.newImage("block/brick.png"), love.graphics.newImage("block/broken_brick.png")},
 		0, 0, 0, 0, 1, shoot_on_brick, reset_status, shoot_on_brick),
         wall = load_block("wall", {love.graphics.newImage("block/wall.png")}, 0, 0, 0, 0, 1, shooted_on_nothing, reset_status, cut_on_nothing),
@@ -161,7 +163,10 @@ function  load_blocks()
         waterbomb = load_block("waterbomb", waterbomb_sprite, 1, 0, 1, 0, 1, waterbomb, waterbomb, waterbomb),
         bolt_ball = load_block("bolt_ball", electric_sprite, 1, 1, 1, fire_time, 1, shooted_on_nothing, electric_damage, cut_on_nothing),
         electric_box = load_block("electric_box", electric_box_sprite, 0, 0, 1, 0, 1, electric_explode, reset_status, electric_explode),
-		chest = load_block("chest", {love.graphics.newImage("block/coffre.png")}, 0, 0, 0, 0, 1, shooted_on_nothing, reset_status, open_chest)}
+		chest = load_block("chest", {love.graphics.newImage("block/coffre.png")}, 0, 0, 0, 0, 1, shooted_on_nothing, reset_status, open_chest),
+		one_dir = load_block("one_dir", {love.graphics.newImage("block/tmp.png")}, 1, 1, 0, 0, 1, shooted_on_nothing, reset_status, cut_on_nothing)}
+
+		blocks.one_dir.one_dir_block = {x = -1, y = 0}
 
 		powerup_life_block = load_powerup("PU_life", "block/life.png", 1, 1, powerup_life)
 		powerup_shield_block = load_powerup("PU_shield", "block/shield.png", 1, 1, powerup_shield)

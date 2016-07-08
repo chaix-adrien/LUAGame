@@ -15,8 +15,17 @@ function move_of(p, v, i, fly)
 	else
 		local concerned = map[math.floor(p.y)][math.floor(p.x)]
 		local delta = {x = np.x - p.x, y = np.y - p.y} 
-		if (concerned.one_dir_block.x < 0 and delta.x < 0) then out.x = np.x end
-		if (concerned.one_dir_block.y < 0 and delta.y < 0) then out.y = np.y end
+		if (concerned.one_dir_block.x < 0 and delta.x < 0) then
+			if ((np.y >= 1 and np.y <= y_fields + 1) and (fly == 1 or map[math.floor(np.y)][math.floor(p.x)].walkable == 1)) then
+				out.x = np.x
+			end
+		end
+		if (concerned.one_dir_block.y < 0 and delta.y < 0) then
+			if ((np.x >= 1 and np.x <= x_fields + 1) and (fly == 1 or map[math.floor(out.y)][math.floor(np.x)].walkable == 1)) then
+				out.y = np.y
+			end
+		end
+		return out.x, out.y
 	end
 end
 
