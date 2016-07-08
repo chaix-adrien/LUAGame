@@ -91,26 +91,26 @@ end
 --
 --
 
-function reset_status(x, y, player)
+function reset_status(x, y, player, concerned)
 	player["speed"] = frame_speed
 end
 
-function fire_damage(x, y, player)
+function fire_damage(x, y, player, concerned)
 	deal_dammages(player, 10, 1)
 end
 
-function electric_damage(x, y, player)
+function electric_damage(x, y, player, concerned)
 	if (player["shield_life"] > 0) then
 		player["shield_life"] = 0
 		shield_break_sound:play()
 	end
 end
 
-function mud(x, y, player)
+function mud(x, y, player, concerned)
 	player["speed"] = default_speed / 3
 end
 
-function waterbomb(x, y, player)
+function waterbomb(x, y, player, concerned)
 	for i = y - 1, y + 1, 1 do
 		for j = x - 1, x + 1, 1 do
 			if (((i > 0 and i < y_fields and j > 0 and j < x_fields and map[i][j].type == "floor") and math.random(3) == 2) or (i == y and j == x)) then

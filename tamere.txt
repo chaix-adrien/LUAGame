@@ -86,15 +86,15 @@ zombie
    {"rank":"state","value":0}
 end_table
 table
-zombie_turn_last
+randbomb
    table
       scale
-      {"rank":"y","value":0.5}
-      {"rank":"x","value":0.5}
+      {"rank":"y","value":0.625}
+      {"rank":"x","value":0.625}
    end_table
    {"rank":"life","value":100}
    {"rank":"speed","value":0.5}
-   {"rank":"type","value":"zombie_turn_last"}
+   {"rank":"type","value":"randbomb"}
    table
       size
       {"rank":"y","value":1}
@@ -110,17 +110,13 @@ zombie_turn_last
    end_table
    table
       state
-      table
-            dest
-         {"rank":"y","value":3.5}
-         {"rank":"x","value":10}
-      end_table
+      {"rank":"intersec","value":0.5}
       table
             move
          {"rank":"y","value":0}
          {"rank":"x","value":0.025}
       end_table
-      {"rank":"intersec","value":0.5}
+      {"rank":"loop_frame","value":1}
    end_table
 end_table
 table
@@ -181,6 +177,7 @@ turret_target
    end_table
    table
       state
+      {"rank":"loop_frame","value":1}
       {"rank":"fire_frequency","value":2}
       {"rank":"fire_time","value":0}
    end_table
