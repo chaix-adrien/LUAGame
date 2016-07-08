@@ -116,10 +116,10 @@ function  restart_pvp()
 	set_volumes()
 	create_mobs()
 	spawn_mob("randbomb", 3.5, 3.5, {move = {x = 1, y = 0}}, math.pi * 0.75)
-	--spawn_mob("turret_fixed", 3.5, 3.5, nil, math.pi * 0.75)
-	--spawn_mob("turret_target", 7.5, 7.5, nil, 0, players[1], {255, 100, 100, 255})
-	--spawn_mob("turret_target_mobile", 9.5, 7.5, nil, 0, players[1], {255, 255, 100, 255})
-	--spawn_mob("turret_rot", 10.5, 7.5, nil, 0, nil, {100, 100, 255, 255})
+	spawn_mob("turret_fixed", 3.5, 3.5, nil, math.pi * 0.75)
+	spawn_mob("turret_target", 7.5, 7.5, nil, 0, players[1], {255, 100, 100, 255})
+	spawn_mob("turret_target_mobile", 9.5, 7.5, nil, 0, players[1], {255, 255, 100, 255})
+	spawn_mob("turret_rot", 10.5, 7.5, nil, 0, nil, {100, 100, 255, 255})
 	return 0
 end
 
@@ -193,6 +193,10 @@ function load_animation()
 	randbomb_sprite = {}
 	for i = 1, 9, 1 do
 		table.insert(randbomb_sprite, love.graphics.newImage("mob/randbomb/randbomb" .. tostring(i) .. ".png"))
+	end
+	turret_alive_sprite = {}
+	for i = 1, 16, 1 do
+		table.insert(turret_alive_sprite, love.graphics.newImage("mob/turret_alive/" .. tostring(i) .. ".png"))
 	end
 end
 
@@ -287,13 +291,13 @@ function load_mobs()
 	end
 	mobs_ref = {zombie = load_mob("zombie", 100, electric_box_sprite, 0, 1, 1,
 	nil_func, update_mob_only_frame, draw_mob_basic, kill_mob, walk_mob_hit, kill_mob, 0, 1, 1, 5, 5, 0),
-	turret_fixed = load_mob("turret_fixed", 100, {turret_sprite}, {fire_time = 0, fire_frequency = 2}, 1, 0,
+	turret_fixed = load_mob("turret_fixed", 100, turret_alive_sprite, {fire_time = 0, fire_frequency = 2}, 1, 0,
 	nil_func, update_turret_fix, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
-	turret_target = load_mob("turret_target", 100, {turret_sprite}, {fire_time = 0, fire_frequency = 2}, 1, 0,
+	turret_target = load_mob("turret_target", 100, turret_alive_sprite, {fire_time = 0, fire_frequency = 2, loop_frame = 1}, 1, 0,
 	nil_func, update_turret_target, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
-	turret_rot = load_mob("turret_rot", 100, {turret_sprite}, {fire_time = 0, fire_frequency = 2, min_rot = 0, max_rot = math.pi / 2, side = 1}, 1, 0,
+	turret_rot = load_mob("turret_rot", 100, turret_alive_sprite, {fire_time = 0, fire_frequency = 2, min_rot = 0, max_rot = math.pi / 2, side = 1}, 1, 0,
 	nil_func, update_turret_rot, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
-	turret_target_mobile = load_mob("turret_target_mobile", 100, concat({turret_sprite}, turret_move_sprite),
+	turret_target_mobile = load_mob("turret_target_mobile", 100, concat({turret_sprite}, turret_alive_sprite),
 	{fire_time = 0, fire_frequency = 1, mode = 0, mode_time = 1, turret_time = 5, cycle_time = 10}, 1, 0.5, -- TODO, prise en compte de speed
 	move_turret_target_mobile, update_turret_target_mobile, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
 	randbomb = load_mob("randbomb", 100, randbomb_sprite,

@@ -37,7 +37,6 @@ end
 
 function draw_mob_loop(mob, focus)
 	px, py = map_to_pix(mob.pos.x, mob.pos.y, focus)
-	print(mob.frame)
 	px, py = rotate_pos(px, py, mob.r, mob.sprite[math.floor(mob.frame)])
 	if (mob.color) then
 		love.graphics.setColor(mob.color)
@@ -70,6 +69,7 @@ function update_turret_fix(mob, dt)
 		fire(mob.pos, mob.r, 10)
 		mob.state.fire_time = 0
 	end
+	update_mob_only_frame(mob, dt)
 end
 
 function update_turret_rot(mob, dt)
@@ -84,6 +84,7 @@ function update_turret_rot(mob, dt)
 	if (mob.r > mob.state.max_rot or mob.r < mob.state.min_rot) then
 		mob.state.side = mob.state.side * -1
 	end
+	update_mob_only_frame(mob, dt)
 end
 
 function update_turret_target(mob, dt)
@@ -96,6 +97,7 @@ function update_turret_target(mob, dt)
 		local r = vec_to_r(mob.target.pos_x - mob.pos.x, mob.target.pos_y - mob.pos.y)
 		mob.r = mob.r + ((r - mob.r) / 10)
 	end
+	update_mob_only_frame(mob, dt)
 end
 
 function move_turret_target_mobile(mob, dt)
