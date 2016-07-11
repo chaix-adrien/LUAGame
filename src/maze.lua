@@ -124,21 +124,21 @@ function maze(mob, dt) -- TODO prendre en compte dt
     end        
 end
 
-teub = 1
+-- teub = 1
 
-function love.update(dt)
-    local mob = {pos = {x = 1, y = 2}}
-    local player = {pos_x = 6, pos_y = 1}
-    local tmp_map = {
-        {-1, -1, -1, -1, 0, 0, -1, -1},
-        {0, 0, 0, -1, 0, 0, 0, -1},
-        {0, -1, -1, -1, -1, -1, 0, 0},
-        {0, 0, 0, -1, 0, 0, 0, 0},
-        {0, -1, 0, -1, 0, 0, 0, 0},
-        {0, -1, 0, 0, 0, -1, 0, 0}
-    }
-    if (teub == 1) then
-        maze(mob, tmp_map, player)
-        teub = 0
-    end
-end
+-- function love.update(dt)
+--     local mob = {pos = {x = 1, y = 2}}
+--     local player = {pos_x = 6, pos_y = 1}
+--     local tmp_map = {
+--         {-1, -1, -1, -1, 0, 0, -1, -1},
+--         {0, 0, 0, -1, 0, 0, 0, -1},
+--         {0, -1, -1, -1, -1, -1, 0, 0},
+--         {0, 0, 0, -1, 0, 0, 0, 0},
+--         {0, -1, 0, -1, 0, 0, 0, 0},
+--         {0, -1, 0, 0, 0, -1, 0, 0}
+--     }
+--     if (teub == 1) then
+--         maze(mob, tmp_map, player)
+--         teub = 0
+--     end
+-- end
