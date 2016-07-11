@@ -125,46 +125,6 @@ function  restart_pvp()
 	return 0
 end
 
-function restart_editor()
-	powerups = {}
-	players = {}
-	tile_sizex = screen_w / view.w
-	tile_sizey = screen_h / view.h
-	reset_blocks_mobs()
-	size = 0
-	for i, block in pairs(blocks) do
-		size = size + 1
-	end
-	cam = {cam_size = {w = screen_w - (screen_w / 4), h = screen_h},
-	pos_x = x_fields / 2, pos_y = y_fields / 2,
-	target = nil, -- TODO trouver utilité
-	cam_view = {w = 0, h = 0},
-	cam_pos_pix = {x = screen_w / 8, y = 0}}
-	
-	cam_scroller = {cam_size = {w = screen_w / 8, h = screen_h},
-	pos_x = 1, pos_y = size / 2,
-	target = nil, -- TODO trouver utilité
-	cam_view = {w = 1, h = screen_h / (screen_w / 8)},
-	cam_pos_pix = {x = 0, y = 0}}
-	print(cam_scroller.cam_view.h)
-	cam.cam_view.w = screen_w / 80
-	cam.cam_view.h = screen_h / 80
-	if (cam.cam_view.w < 16) then cam.cam_view.w = 16 end
-	if (cam.cam_view.h < 9) then cam.cam_view.h = 9 end
-	map = gen_map(x_fields + 10, y_fields + 10, 0)
-	
-	block_selec_r = gen_map(1, size, 0)
-	block_selec_l = gen_map(1, size, 0)
-	y = 0
-	for i, block in pairs(blocks) do
-		y = y + 1
-		block_selec_r[y][1] = copy_table(block)
-		block_selec_l[y][1] = copy_table(block)
-	end
-	set_volumes()
-	create_mobs()
-end
-
 function load_block(typeof, sprites, walkability, cross, animate, status, frames, shoot, walk, cut)
 	sx, sy = get_sprite_scale(sprites[1])
 	local block = {type = typeof, sprite = sprites, scale_x = sx, scale_y = sy, walkable = walkability, animated = animate, state = status, frame = frames, shooted_on = shoot, walked_on = walk, cut_on = cut, crossable = cross}

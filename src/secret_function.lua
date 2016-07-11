@@ -1,5 +1,5 @@
 function rotate_pos(x, y, r, sprite, focus)
-	tile_size, wiew, screen, size = get_focus_result(focus)
+	wiew, screen, size = get_focus_result(focus)
 	local new_x = (math.cos(-r) * size.w + math.sin(-r) * size.h) / 2
 	local new_y = (math.cos(-r) * size.h - math.sin(-r) * size.w) / 2
 	local tmp_x = x - new_x
@@ -9,7 +9,7 @@ end
 
 function draw_shield(player, focus)
 	if (player["shield"] and player["shield"] == 1 and player["shield_life"] > 0) then
-		tile_size, wiew, screen, size = get_focus_result(focus)
+		wiew, screen, size = get_focus_result(focus)
 		if (player["shield_life"] > 2) then love.graphics.setColor(0, 0, 255, 255)
 		elseif (player["shield_life"] > 1) then love.graphics.setColor(50, 100, 255, 255)
 		elseif (player["shield_life"] > 0) then love.graphics.setColor(100, 200, 255, 255)

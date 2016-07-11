@@ -1,5 +1,5 @@
 function get_sprite_scale(sprite, focus) -- prendre focus
-	tile_size, wiew, screen, size = get_focus_result(focus)
+	wiew, screen, size = get_focus_result(focus)
 	local x = size.w / sprite:getWidth()
 	local y = size.h / sprite:getHeight()
 	return x, y
@@ -21,7 +21,7 @@ function map_to_pixel(x, y, focus)
 	if (not focus) then
 		return x, y
 	end
-	tile_size, wiew, screen, size = get_focus_result(focus)
+	wiew, screen, size = get_focus_result(focus)
 	if (focus.cam_pos_pix) then
 		pos_pix = focus.cam_pos_pix
 	else

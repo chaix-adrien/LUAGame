@@ -4,6 +4,7 @@ require("slam")
 JSON = assert(loadfile "src/JSON.lua")()
 require("config")
 impact = {}
+require("editor")
 require("misc")
 require("player")
 require("gui")

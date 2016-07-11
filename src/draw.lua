@@ -48,6 +48,7 @@ function draw_powerup(powerup, x, y, focus)
 end
 
 function draw_powerups(powerups, focus)
+	if (not powerups) then return end	
 	for i, powerup in pairs(powerups) do
 		draw_powerup(powerup, powerup.x, powerup.y, focus)
 	end
@@ -58,9 +59,9 @@ function get_to_draw_map_pos(x, y, focus)
 		return x, y
 	end
 	if (focus and focus.cam_view) then
-		local wiew = focus.cam_view
+		wiew = focus.cam_view
 	else
-		local wiew = view
+		wiew = view
 	end
 	local retx = (focus.pos_x - wiew.w / 2) + (x - 1)
 	local rety = (focus.pos_y - wiew.h / 2) + (y - 1)
@@ -68,7 +69,7 @@ function get_to_draw_map_pos(x, y, focus)
 	if (focus.pos_y >= focus.y_fields - wiew.h / 2 + 1) then rety = focus.y_fields - wiew.h + y end
 	if (focus.pos_x <= wiew.w / 2 + 1) then retx = x end
 	if (focus.pos_y <= wiew.h / 2 + 1) then rety = y end
-	if (retx >= focus.x_fields + 1 or retx < 1) then retx = 1	end
+	if (retx >= focus.x_fields + 1 or retx < 1) then retx = 1 end
 	if (rety >= focus.y_fields + 1 or rety < 1) then rety = 1 end
 	return retx, rety
 end
@@ -112,16 +113,16 @@ function draw_map(map, focus, powerup, players, mobs)
 		lim = {w = x_fields - 1, h = y_fields - 1}
 	end
 	for i = 1, lim.w + 1, 1 do
-		for j = 1, lim.h + 1, 1 do
+		for j = 1, lim.h + 2, 1 do
 			x, y = get_to_draw_map_pos(i, j, focus)
 			if (i >= 1 and j >= 1 and i <= focus.x_fields and j <= focus.y_fields) then
 				draw_block(map[math.floor(y)][math.floor(x)], i - (x % 1), j - (y % 1), focus)
 			end
 		end
 	end
-	draw_powerups(powerup, focus) -- TODO param des powerup a draw
-	draw_players(players, walk, focus) -- TODO param des players a draw
-	draw_mobs(mobs, focus) -- TODO param des mobs a draw
+	draw_powerups(powerup, focus)
+	draw_players(players, walk, focus)
+	draw_mobs(mobs, focus)
 end
 
 nameplate_h = 10
@@ -130,9 +131,6 @@ nameplate_space_y = 10
 nameplate_space_x = 4
 
 function get_focus_result(focus)
-	if ((not tile_sizex or not tile_sizey) and not focus) then
-		tile_size = {x = 0, y = 0}
-	end
 	if (focus and focus.cam_view) then
 		wiew = focus.cam_view
 	else
@@ -146,11 +144,11 @@ function get_focus_result(focus)
 	local size = {w = screen.w / wiew.w, h = screen.h / wiew.h}
 	size.w = smaller(size)
 	size.h = size.w
-	return tile_size, view, screen, size
+	return wiew, screen, size
 end
 
 function draw_player_life(player, focus)
-	tile_size, wiew, screen, size = get_focus_result(focus)
+	wiew, screen, size = get_focus_result(focus)
 	nameplate_w = size.w
 	if (player["life"] > 80) then love.graphics.setColor(0, 200, 0, 255)
 	elseif (player["life"] > 60) then love.graphics.setColor(200, 200, 0, 255)
@@ -170,6 +168,7 @@ function draw_player_life(player, focus)
 end
 
 function draw_players(players, walk, focus)
+	if (not players) then return end	
 	local new_r = 0
 	for i, player in pairs(players) do	
 		if (player["alive"] == 1) then
@@ -193,19 +192,12 @@ function draw_players(players, walk, focus)
 end
 
 function draw_mobs(mobs, focus)
+	if (not mobs) then return end
 	for i, mob_type in pairs(mobs) do
 		for j, mob in pairs(mob_type) do
 			mob.draw(mob, focus)
 		end
 	end
-end
-
-function draw_editor()
-	draw_map(map, cam)	
-	cam_scroller.cam_pos_pix.x = 0	
-	draw_map(block_selec_r, cam_scroller)
-	cam_scroller.cam_pos_pix.x = screen_w - cam_scroller.cam_size.w
-	draw_map(block_selec_l, cam_scroller)
 end
 
 function draw_game()
