@@ -47,7 +47,7 @@ function draw_powerup(powerup, x, y, focus)
 		0, sx, sy)
 end
 
-function draw_powerups(focus)
+function draw_powerups(powerups, focus)
 	for i, powerup in pairs(powerups) do
 		draw_powerup(powerup, powerup.x, powerup.y, focus)
 	end
@@ -192,7 +192,7 @@ function draw_players(players, walk, focus)
 	end
 end
 
-function draw_mobs(focus)
+function draw_mobs(mobs, focus)
 	for i, mob_type in pairs(mobs) do
 		for j, mob in pairs(mob_type) do
 			mob.draw(mob, focus)
@@ -209,7 +209,7 @@ function draw_editor()
 end
 
 function draw_game()
-	draw_map(map, players[1])
+	draw_map(map, players[1], powerups, players, mobs)
 	draw_impact(impact, sprite_impact, players[1])
 	draw_victory()
 end
