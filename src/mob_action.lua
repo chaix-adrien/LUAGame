@@ -2,8 +2,6 @@ function nil_func()
 	return nil
 end
 
-
-
 function update_mob_frame_loop(mob, dt)
 	mob.frame = mob.frame + 2 * frame_speed * mob.state.loop_frame
 	if (mob.frame > table.getn(mob.sprite) or mob.frame <= 1) then
@@ -24,11 +22,9 @@ function update_mob_only_frame(mob, dt)
 	end
 end
 
-
-function move_mob_rand(mob)
-	mob.pos.x = mob.pos.x + math.random() * 0.1
-	mob.pos.y = mob.pos.y + math.random() * 0.1
-	-- TODO true rand verifier pos until
+function move_mob_rand(mob, dt)
+	vec = {x = math.random() * 0.1 * dt, y = math.random() * 0.1 * dt}
+	mob.pos.x, mob.pos.y = move_of(mob.pos, vec, mob.speed * dt)
 end
 
 function walk_mob_hit(player, mob)
@@ -105,7 +101,6 @@ function move_turret_target_mobile(mob, dt)
 		maze(mob)
 		mob.frame = (mob.frame + dt * 3) % (#mob.sprite + 1)
 		if (mob.frame <= 1) then mob.frame = 2 end
-		--mob.pos.x, mob.pos.y = move_of(mob.pos, {x = mob.target.pos_x - mob.pos.x, y = mob.target.pos_y - mob.pos.y}, 0.05)
 	else
 		mob.frame = 1
 	end
@@ -118,7 +113,7 @@ function update_turret_target_mobile(mob, dt)
 		mob.state.fire_time = 0
 	end
 	if (mob.target ~= nil and mob.state.fire_time < mob.state.fire_frequency - 0.2) then
-		local r = vec_to_r(mob.target.pos_x - mob.pos.x, mob.target.pos_y - mob.pos.y) -- TODO : rotate etrange
+		local r = vec_to_r(mob.target.pos_x - mob.pos.x, mob.target.pos_y - mob.pos.y)
 		mob.r = mob.r + ((r - mob.r) / 10)
 	end
 	if (mob.state.mode == 0 and mob.state.mode_time >= mob.state.turret_time) then mob.state.mode = 1

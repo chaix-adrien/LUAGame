@@ -1,17 +1,5 @@
 function rotate_pos(x, y, r, sprite, focus)
-	if (focus and focus.cam_view) then -- TODO : faire un fonction qui donne tout ça
-		wiew = focus.cam_view
-	else
-		wiew = view
-	end
-	if (focus and focus.cam_size) then
-		screen = focus.cam_size
-	else
-		screen = {w = screen_w, h = screen_h}
-	end
-	local size = {w = screen.w / wiew.w, h = screen.h / wiew.h}
-	size.w = smaller(size)
-	size.h = size.w
+	tile_size, wiew, screen, size = get_focus_result(focus)
 	local new_x = (math.cos(-r) * size.w + math.sin(-r) * size.h) / 2
 	local new_y = (math.cos(-r) * size.h - math.sin(-r) * size.w) / 2
 	local tmp_x = x - new_x
@@ -21,22 +9,7 @@ end
 
 function draw_shield(player, focus)
 	if (player["shield"] and player["shield"] == 1 and player["shield_life"] > 0) then
-		if ((not tile_sizex or not tile_sizey) and not focus) then
-			return 0, 0
-		end
-		if (focus and focus.cam_view) then
-			wiew = focus.cam_view
-		else
-			wiew = view
-		end
-		if (focus and focus.cam_size) then
-			screen = focus.cam_size
-		else
-			screen = {w = screen_w, h = screen_h}
-		end
-		local size = {w = screen.w / wiew.w, h = screen.h / wiew.h}
-		size.w = smaller(size)
-		size.h = size.w
+		tile_size, wiew, screen, size = get_focus_result(focus)
 		if (player["shield_life"] > 2) then love.graphics.setColor(0, 0, 255, 255)
 		elseif (player["shield_life"] > 1) then love.graphics.setColor(50, 100, 255, 255)
 		elseif (player["shield_life"] > 0) then love.graphics.setColor(100, 200, 255, 255)
@@ -173,7 +146,7 @@ function fire_on_powerups(x, y)
 	end
 end
 
-function fire(pos, r, damage, player) -- TODO param damage if touch, gerer les pdv enelvé aux joueurs ici
+function fire(pos, r, damage, player)
 	local tmp_posx = pos.x
 	local tmp_posy = pos.y
 	vec_x, vec_y = get_view_vector(r, 10)

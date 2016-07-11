@@ -64,12 +64,12 @@ function get_to_draw_map_pos(x, y, focus)
 	end
 	local retx = (focus.pos_x - wiew.w / 2) + (x - 1)
 	local rety = (focus.pos_y - wiew.h / 2) + (y - 1)
-	if (focus.pos_x >= x_fields - wiew.w / 2 + 1) then retx = x_fields - wiew.w + x end
-	if (focus.pos_y >= y_fields - wiew.h / 2 + 1) then rety = y_fields - wiew.h + y end
+	if (focus.pos_x >= focus.x_fields - wiew.w / 2 + 1) then retx = focus.x_fields - wiew.w + x end
+	if (focus.pos_y >= focus.y_fields - wiew.h / 2 + 1) then rety = focus.y_fields - wiew.h + y end
 	if (focus.pos_x <= wiew.w / 2 + 1) then retx = x end
 	if (focus.pos_y <= wiew.h / 2 + 1) then rety = y end
-	if (retx >= x_fields + 1 or retx < 1) then retx = 1	end
-	if (rety >= y_fields + 1 or rety < 1) then rety = 1 end
+	if (retx >= focus.x_fields + 1 or retx < 1) then retx = 1	end
+	if (rety >= focus.y_fields + 1 or rety < 1) then rety = 1 end
 	return retx, rety
 end
 
@@ -84,8 +84,8 @@ function map_to_ori(x, y, focus)
 	end
 	local retx = x - focus.pos_x + wiew.w / 2 + 1
 	local rety = y - focus.pos_y + wiew.h / 2 + 1
-	if (focus.pos_x >= x_fields - wiew.w / 2 + 1) then retx = wiew.w + (x - x_fields) end
-	if (focus.pos_y >= y_fields - wiew.h / 2 + 1) then rety = wiew.h + (y - y_fields) end
+	if (focus.pos_x >= focus.x_fields - wiew.w / 2 + 1) then retx = wiew.w + (x - focus.x_fields) end
+	if (focus.pos_y >= focus.y_fields - wiew.h / 2 + 1) then rety = wiew.h + (y - focus.y_fields) end
 	if (focus.pos_x <= wiew.w / 2 + 1) then retx = x end
 	if (focus.pos_y <= wiew.h / 2 + 1) then rety = y end
 	return retx, rety
@@ -98,25 +98,30 @@ function map_to_pix(x, y, focus)
 	return retx, rety
 end
 
-function draw_map(focus)
+function draw_map(map, focus, powerup, players, mobs)
 	if (focus) then
+		focus["x_fields"] = table.getn(map[1])
+		focus["y_fields"] = table.getn(map)
 		if (focus.cam_view) then
 			lim = focus.cam_view -- peut etre + 1
 		else
 			lim = view
 		end
 	else
+		focus = {x_fields = table.getn(map), y_fields = table.getn(map[1])}
 		lim = {w = x_fields - 1, h = y_fields - 1}
 	end
 	for i = 1, lim.w + 1, 1 do
 		for j = 1, lim.h + 1, 1 do
 			x, y = get_to_draw_map_pos(i, j, focus)
-			draw_block(map[math.floor(y)][math.floor(x)], i - (x % 1), j - (y % 1), focus)
+			if (i >= 1 and j >= 1 and i <= focus.x_fields and j <= focus.y_fields) then
+				draw_block(map[math.floor(y)][math.floor(x)], i - (x % 1), j - (y % 1), focus)
+			end
 		end
 	end
-	draw_powerups(focus)
-	draw_players(players, walk, focus)
-	draw_mobs(focus)
+	draw_powerups(powerup, focus) -- TODO param des powerup a draw
+	draw_players(players, walk, focus) -- TODO param des players a draw
+	draw_mobs(mobs, focus) -- TODO param des mobs a draw
 end
 
 nameplate_h = 10
@@ -124,9 +129,9 @@ nameplate_w = tile_sizex
 nameplate_space_y = 10
 nameplate_space_x = 4
 
-function draw_player_life(player, focus)
-	if ((not tile_sizex or not tile_sizey) and not focus) then -- TODO : faire une fonction qui renvoi tout ça
-		return 0, 0
+function get_focus_result(focus)
+	if ((not tile_sizex or not tile_sizey) and not focus) then
+		tile_size = {x = 0, y = 0}
 	end
 	if (focus and focus.cam_view) then
 		wiew = focus.cam_view
@@ -141,6 +146,11 @@ function draw_player_life(player, focus)
 	local size = {w = screen.w / wiew.w, h = screen.h / wiew.h}
 	size.w = smaller(size)
 	size.h = size.w
+	return tile_size, view, screen, size
+end
+
+function draw_player_life(player, focus)
+	tile_size, wiew, screen, size = get_focus_result(focus)
 	nameplate_w = size.w
 	if (player["life"] > 80) then love.graphics.setColor(0, 200, 0, 255)
 	elseif (player["life"] > 60) then love.graphics.setColor(200, 200, 0, 255)
@@ -191,17 +201,20 @@ function draw_mobs(focus)
 end
 
 function draw_editor()
-	draw_map(cam)
+	draw_map(map, cam)	
+	cam_scroller.cam_pos_pix.x = 0	
+	draw_map(block_selec_r, cam_scroller)
+	cam_scroller.cam_pos_pix.x = screen_w - cam_scroller.cam_size.w
+	draw_map(block_selec_l, cam_scroller)
 end
 
 function draw_game()
-	draw_map(players[1])
+	draw_map(map, players[1])
 	draw_impact(impact, sprite_impact, players[1])
 	draw_victory()
 end
 
 -- TODO URGENT:
---marche sur hole et bords de map
 --tester changer view
 --tester sans focus
 --

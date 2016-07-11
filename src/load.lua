@@ -7,7 +7,7 @@ function copy_table(tb)
 end
 
 function gen_map(x, y, rate)
-	map = {}
+	local tmpmap = {}
 	for i = 1, y, 1 do
 		local to_add = {}
 		for j = 1, x, 1 do
@@ -34,9 +34,9 @@ function gen_map(x, y, rate)
 				table.insert(to_add, copy_table(blocks.floor))
 			end
 		end
-		table.insert(map, to_add)
+		table.insert(tmpmap, to_add)
 	end
-	return (map)
+	return (tmpmap)
 end
 
 function load_player_joystick()
@@ -89,7 +89,7 @@ function concat_name(l1, l2)
 	return out
 end
 
-function spawn_mob(type, px, py, state, rot, target, color) -- TODO faire des creation de liste puis insert pour pouvoir mettre stat par defaut dans mob_ref
+function spawn_mob(type, px, py, state, rot, target, color)
 	table.insert(mobs[type], copy_table(mobs_ref[type]))
 	mobs[type][#(mobs[type])].pos.x = px
 	mobs[type][#(mobs[type])].pos.y = py
@@ -105,7 +105,7 @@ function  restart_pvp()
 	powerups = {}
 	joysticks = love.joystick.getJoysticks()
 	if (table.getn(joysticks) < 1) then return 1 end
-	tile_sizex = screen_w / x_fields -- TODO : si map < ratio screen, calculler tile size autrement pour que block carré, add pos map par rapport a l'ecran
+	tile_sizex = screen_w / x_fields
 	tile_sizey = screen_h / y_fields
 	reset_blocks_mobs()
 	load_player_joystick()
@@ -129,8 +129,36 @@ function restart_editor()
 	tile_sizex = screen_w / view.w
 	tile_sizey = screen_h / view.h
 	reset_blocks_mobs()
-	cam = {pos_x = x_fields / 2, pos_y = y_fields / 2, target = nil, cam_view = {w = x_fields, h = y_fields}}
-	map = gen_map(x_fields, y_fields, 0)
+	size = 0
+	for i, block in pairs(blocks) do
+		size = size + 1
+	end
+	cam = {cam_size = {w = screen_w - (screen_w / 4), h = screen_h},
+	pos_x = x_fields / 2, pos_y = y_fields / 2,
+	target = nil, -- TODO trouver utilité
+	cam_view = {w = 0, h = 0},
+	cam_pos_pix = {x = screen_w / 8, y = 0}}
+	
+	cam_scroller = {cam_size = {w = screen_w / 8, h = screen_h},
+	pos_x = 1, pos_y = size / 2,
+	target = nil, -- TODO trouver utilité
+	cam_view = {w = 1, h = screen_h / (screen_w / 8)},
+	cam_pos_pix = {x = 0, y = 0}}
+	print(cam_scroller.cam_view.h)
+	cam.cam_view.w = screen_w / 80
+	cam.cam_view.h = screen_h / 80
+	if (cam.cam_view.w < 16) then cam.cam_view.w = 16 end
+	if (cam.cam_view.h < 9) then cam.cam_view.h = 9 end
+	map = gen_map(x_fields + 10, y_fields + 10, 0)
+	
+	block_selec_r = gen_map(1, size, 0)
+	block_selec_l = gen_map(1, size, 0)
+	y = 0
+	for i, block in pairs(blocks) do
+		y = y + 1
+		block_selec_r[y][1] = copy_table(block)
+		block_selec_l[y][1] = copy_table(block)
+	end
 	set_volumes()
 	create_mobs()
 end
