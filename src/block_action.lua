@@ -47,7 +47,7 @@ function explode(x, y, player)
 			end
 		end
 	end
-	map[y][x] = copy_table(blocks.hole)
+	map[y][x] = recur_copy_table(blocks.hole)
 	return (1)
 end
 
@@ -115,7 +115,7 @@ function waterbomb(x, y, player, concerned)
 		for j = x - 1, x + 1, 1 do
 			if (((i > 0 and i < y_fields and j > 0 and j < x_fields and map[i][j].type == "floor") and math.random(3) == 2) or (i == y and j == x)) then
 				waterbomb_sound:play()
-				map[i][j] = copy_table(blocks.mud)
+				map[i][j] = recur_copy_table(blocks.mud)
 			end
 		end
 	end
@@ -180,19 +180,19 @@ end
 
 function turn_block_to_fire(px, py, player)
 	if (map[py][px].type ~= "mud") then
-		map[py][px] = copy_table(blocks.fire)
+		map[py][px] = recur_copy_table(blocks.fire)
 	end
 	return (1)
 end
 
 function turn_block_to_electric(px, py, player)
 	if (map[py][px].type ~= "mud") then
-		map[py][px] = copy_table(blocks.bolt_ball)
+		map[py][px] = recur_copy_table(blocks.bolt_ball)
 	end
 	return (1)
 end
 
 function turn_block_to_floor(x, y)
-	map[y][x] = copy_table(blocks.floor)
+	map[y][x] = recur_copy_table(blocks.floor)
 	return (1)
 end

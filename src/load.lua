@@ -12,28 +12,28 @@ function gen_map(x, y, rate)
 		local to_add = {}
 		for j = 1, x, 1 do
 			if (love.math.random(rate) == rate - 1) then
-				table.insert(to_add, copy_table(blocks.wall))
+				table.insert(to_add, recur_copy_table(blocks.wall))
         -- BLOC PIMP
 			elseif (love.math.random(rate / 2) == ((rate / 2) - 1)) then
-				table.insert(to_add, copy_table(blocks.brick))
+				table.insert(to_add, recur_copy_table(blocks.brick))
 			elseif (love.math.random(rate) == ((rate) - 1)) then
-				table.insert(to_add, copy_table(blocks.hole))
+				table.insert(to_add, recur_copy_table(blocks.hole))
 			elseif (love.math.random(rate) == ((rate) - 1)) then
-				table.insert(to_add, copy_table(blocks.mud))
+				table.insert(to_add, recur_copy_table(blocks.mud))
 			elseif (love.math.random(rate) == ((rate) - 1)) then
-				table.insert(to_add, copy_table(blocks.inflamable))
+				table.insert(to_add, recur_copy_table(blocks.inflamable))
 			elseif (love.math.random(rate * 4) == ((rate))) then
-				table.insert(to_add, copy_table(blocks.tnt))
+				table.insert(to_add, recur_copy_table(blocks.tnt))
 			elseif (love.math.random(rate * 4) == ((rate))) then
-				table.insert(to_add, copy_table(blocks.electric_box))
+				table.insert(to_add, recur_copy_table(blocks.electric_box))
 			elseif (love.math.random(rate * 4) == ((rate))) then
-				table.insert(to_add, copy_table(blocks.waterbomb))
+				table.insert(to_add, recur_copy_table(blocks.waterbomb))
 			elseif (love.math.random(rate) == ((rate))) then
-				table.insert(to_add, copy_table(blocks.one_dir))
+				table.insert(to_add, recur_copy_table(blocks.one_dir))
 			elseif (love.math.random(rate * 20) == ((rate))) then
-				table.insert(to_add, copy_table(blocks.chest))
+				table.insert(to_add, recur_copy_table(blocks.chest))
 			else
-				table.insert(to_add, copy_table(blocks.floor))
+				table.insert(to_add, recur_copy_table(blocks.floor))
 			end
 		end
 		table.insert(tmpmap, to_add)
@@ -91,16 +91,18 @@ function concat_name(l1, l2)
 	return out
 end
 
-function spawn_mob(type, px, py, state, rot, target, color)
-	table.insert(mobs[type], copy_table(mobs_ref[type]))
-	mobs[type][#(mobs[type])].pos.x = px
-	mobs[type][#(mobs[type])].pos.y = py
-	mobs[type][#(mobs[type])].r = rot
-	mobs[type][#(mobs[type])].target = target
+function spawn_mob(table_, type, px, py, state, rot, target, color)
+	table.insert(table_[type], recur_copy_table(mobs_ref[type]))
+	table_[type][#(table_[type])].pos.x = px
+	table_[type][#(table_[type])].pos.y = py
+	if (rot) then table_[type][#(table_[type])].r = rot end
+	if (target) then table_[type][#(table_[type])].target = target end
 	if (state) then
-		mobs[type][#(mobs[type])].state = concat_name(mobs[type][#(mobs[type])].state, state)
+		table_[type][#(table_[type])].state = concat_name(table_[type][#(table_[type])].state, state)
 	end
-	mobs[type][#(mobs[type])].color = color	
+	if (color) then
+		table_[type][#(table_[type])].color = color	
+	end
 end
 
 function  restart_pvp()
@@ -116,12 +118,12 @@ function  restart_pvp()
 	game_victory = 0
 	item_spawn = item_spawn_rate
 	set_volumes()
-	create_mobs()
-	spawn_mob("randbomb", 3.5, 3.5, {move = {x = 1, y = 0}}, math.pi * 0.75)
-	spawn_mob("turret_fixed", 3.5, 3.5, nil, math.pi * 0.75)
-	spawn_mob("turret_target", 7.5, 7.5, nil, 0, players[1], {255, 100, 100, 255})
-	spawn_mob("turret_target_mobile", 9.5, 7.5, nil, 0, players[1], {255, 255, 100, 255})
-	spawn_mob("turret_rot", 10.5, 7.5, nil, 0, nil, {100, 100, 255, 255})
+	mobs = create_mobs()
+	spawn_mob(mobs, "randbomb", 3.5, 3.5, {move = {x = 1, y = 0}}, math.pi * 0.75)
+	spawn_mob(mobs, "turret_fixed", 3.5, 3.5, nil, math.pi * 0.75)
+	spawn_mob(mobs, "turret_target", 7.5, 7.5, nil, 0, players[1])
+	spawn_mob(mobs, "turret_target_mobile", 9.5, 7.5, nil, 0, players[1])
+	spawn_mob(mobs, "turret_rot", 10.5, 7.5, nil, 0, nil)
 	return 0
 end
 
@@ -247,13 +249,14 @@ function load_sounds()
 end
 
 function create_mobs()
-	mobs = {}
+	local toreturn = {}
 	for i, mob in pairs(mobs_ref) do
-		mobs[mob.type] = {}
+		toreturn[mob.type] = {}
 	end
+	return toreturn
 end
 
-function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, draw_mo, shoot_o, move_o, cut_o, crossab, size_x, size_y, pos_x, pos_y, rot)
+function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, draw_mo, shoot_o, move_o, cut_o, crossab, size_x, size_y, pos_x, pos_y, rot, color)
 	local mob = {type = nam,
 				life = lif,
 				sprite = sprit,
@@ -271,7 +274,7 @@ function load_mob(nam, lif, sprit, statu, fram, spee, update_mov, update_mo, dra
 				target = nil,
 				size = {x = size_x, y = size_y},
 				pos = {x = pos_x, y = pos_y},
-				color = nil,
+				color = color,
 				scale = {x = (tile_sizex / sprit[1]:getWidth() * size_x), y = (tile_sizey / sprit[1]:getHeight() * size_y)}}
 	return (mob)
 end
@@ -287,12 +290,12 @@ function load_mobs()
 	turret_fixed = load_mob("turret_fixed", 100, turret_alive_sprite, {fire_time = 0, fire_frequency = 2}, 1, 0,
 	nil_func, update_turret_fix, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
 	turret_target = load_mob("turret_target", 100, turret_alive_sprite, {fire_time = 0, fire_frequency = 2, loop_frame = 1}, 1, 0,
-	nil_func, update_turret_target, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
+	nil_func, update_turret_target, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0, {255, 100, 100, 255}),
 	turret_rot = load_mob("turret_rot", 100, turret_alive_sprite, {fire_time = 0, fire_frequency = 2, min_rot = 0, max_rot = math.pi / 2, side = 1}, 1, 0,
-	nil_func, update_turret_rot, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
+	nil_func, update_turret_rot, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0, {100, 100, 255, 255}),
 	turret_target_mobile = load_mob("turret_target_mobile", 100, concat({turret_sprite}, turret_alive_sprite),
 	{fire_time = 0, fire_frequency = 1, mode = 0, mode_time = 1, turret_time = 5, cycle_time = 10}, 1, 0.5, -- TODO, prise en compte de speed
-	move_turret_target_mobile, update_turret_target_mobile, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0),
+	move_turret_target_mobile, update_turret_target_mobile, draw_mob_basic, kill_mob, nil_func, kill_mob, 0, 1, 1, 5, 5, 0,  {255, 255, 100, 255}),
 	randbomb = load_mob("randbomb", 100, randbomb_sprite,
 	{move = {x = frame_speed / 4, y = 0}, intersec = 0.5, loop_frame = 1}, 1, 0.5, -- TODO, prise en compte de speed
 	move_zombie_turn_last, update_mob_frame_loop, draw_mob_loop, nil_func, walk_mob_hit, nil_func, 0, 1, 1, 5, 5, 0)}
@@ -324,6 +327,8 @@ function launch_editor(x, y)
 	end
 	love.update = update_editor
 	love.draw = draw_editor
+	love.keypressed = editor_keypressed
+	love.mousepressed = editor_mousepressed
 end
 
 

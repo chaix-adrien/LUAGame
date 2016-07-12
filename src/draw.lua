@@ -92,7 +92,6 @@ function map_to_ori(x, y, focus)
 	return retx, rety
 end
 
-
 function map_to_pix(x, y, focus)
 	retx, rety = map_to_ori(x, y, focus)
 	retx, rety = map_to_pixel(retx, rety, focus)
@@ -112,7 +111,7 @@ function draw_map(map, focus, powerup, players, mobs)
 		focus = {x_fields = table.getn(map), y_fields = table.getn(map[1])}
 		lim = {w = x_fields - 1, h = y_fields - 1}
 	end
-	for i = 1, lim.w + 1, 1 do
+	for i = 1, lim.w + 2, 1 do
 		for j = 1, lim.h + 2, 1 do
 			x, y = get_to_draw_map_pos(i, j, focus)
 			if (i >= 1 and j >= 1 and i <= focus.x_fields and j <= focus.y_fields) then
