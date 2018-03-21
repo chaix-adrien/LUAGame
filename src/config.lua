@@ -12,7 +12,7 @@ default_speed = 0.1
 fire_time = 2.5
 frame_speed = default_speed
 
-launch_on = "editor" -- pvp / menu / editor
+launch_on = "menu" -- pvp / menu / editor
 music_volume = 0
 sound_volume = 0
 fullscreen = false

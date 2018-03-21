@@ -28,8 +28,6 @@ function gen_map(x, y, rate)
 				table.insert(to_add, recur_copy_table(blocks.electric_box))
 			elseif (love.math.random(rate * 4) == ((rate))) then
 				table.insert(to_add, recur_copy_table(blocks.waterbomb))
-			elseif (love.math.random(rate) == ((rate))) then
-				table.insert(to_add, recur_copy_table(blocks.one_dir))
 			elseif (love.math.random(rate * 20) == ((rate))) then
 				table.insert(to_add, recur_copy_table(blocks.chest))
 			else
@@ -119,11 +117,6 @@ function  restart_pvp()
 	item_spawn = item_spawn_rate
 	set_volumes()
 	mobs = create_mobs()
-	spawn_mob(mobs, "randbomb", 3.5, 3.5, {move = {x = 1, y = 0}}, math.pi * 0.75)
-	spawn_mob(mobs, "turret_fixed", 3.5, 3.5, nil, math.pi * 0.75)
-	spawn_mob(mobs, "turret_target", 7.5, 7.5, nil, 0, players[1])
-	spawn_mob(mobs, "turret_target_mobile", 9.5, 7.5, nil, 0, players[1])
-	spawn_mob(mobs, "turret_rot", 10.5, 7.5, nil, 0, nil)
 	return 0
 end
 
